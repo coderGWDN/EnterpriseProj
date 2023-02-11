@@ -20,6 +20,7 @@
             </div>
 
             <div class="form-group">
+                <label asp-for="Input.FullName"></label>
                 <input asp-for="Input.FullName"
                        type="text"
                        class="form-control form-control-user"
@@ -41,11 +42,18 @@
             </div>
             
             <div class="form-group">
+                <label asp-for="Input.Address"></label>
                 <input asp-for="Input.Address"
                        class="form-control form-control-user"
                        placeholder="Address">
                 <span asp-validation-for="Input.Address" class="text-danger"></span>
             </div>
+            
+            <div class="form-group">
+                <label asp-for="Input.Role"></label>
+                @Html.DropDownListFor(a => a.Input.Role, Model.Input.RoleList, "-Select Role", new {@class = "form-control"}) 
+                 <span asp-validation-for="Input.Role" class="text-danger"></span> 
+             </div>
             
             <button type="submit" class="btn btn-primary">Register</button>
         </form>

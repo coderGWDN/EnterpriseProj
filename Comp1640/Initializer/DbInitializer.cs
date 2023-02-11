@@ -2,6 +2,7 @@
 using System.Linq;
 using Comp1640.Data;
 using Comp1640.Models;
+using Comp1640.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,13 +36,13 @@ namespace Comp1640.Initializer
                 // ignored
             }
             
-            if (_db.Roles.Any(r => r.Name == "QA")) return;
-            if (_db.Roles.Any(r => r.Name == "STAFF")) return;
-            if (_db.Roles.Any(r => r.Name == "ADMIN")) return;
+            if (_db.Roles.Any(r => r.Name == SD.Role_QA)) return;
+            if (_db.Roles.Any(r => r.Name == SD.Role_STAFF)) return;
+            if (_db.Roles.Any(r => r.Name == SD.Role_ADMIN)) return;
             
-            _roleManager.CreateAsync(new IdentityRole("QA")).GetAwaiter().GetResult();
-            _roleManager.CreateAsync(new IdentityRole("STAFF")).GetAwaiter().GetResult();
-            _roleManager.CreateAsync(new IdentityRole("ADMIN")).GetAwaiter().GetResult();
+            _roleManager.CreateAsync(new IdentityRole(SD.Role_QA)).GetAwaiter().GetResult();
+            _roleManager.CreateAsync(new IdentityRole(SD.Role_STAFF)).GetAwaiter().GetResult();
+            _roleManager.CreateAsync(new IdentityRole(SD.Role_ADMIN)).GetAwaiter().GetResult();
 
             _userManager.CreateAsync(new ApplicationUser()
             {
@@ -53,7 +54,7 @@ namespace Comp1640.Initializer
             }, "Admin123@").GetAwaiter().GetResult();
             
             ApplicationUser admin = _db.ApplicationUsers.Where(u => u.Email == "admin@gmail.com").FirstOrDefault();
-            _userManager.AddToRoleAsync(admin, "Admin").GetAwaiter().GetResult();
+            _userManager.AddToRoleAsync(admin, SD.Role_ADMIN).GetAwaiter().GetResult();
         }
     }
 }

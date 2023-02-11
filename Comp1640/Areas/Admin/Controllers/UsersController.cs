@@ -14,15 +14,18 @@ using Comp1640.ViewModels;
 namespace Comp1640.Areas.Admin.Controllers
 {
     [Area(SD.Area_Admin)]
-    [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = SD.Role_ADMIN)]
     public class UsersController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
 
-        public UsersController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext db)
+        public UsersController(
+            UserManager<IdentityUser> userManager, 
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext db
+            )
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -160,40 +163,40 @@ namespace Comp1640.Areas.Admin.Controllers
         }
 
         //======================= CONFIRM EMAIL ===========================
-        // [HttpGet]
-        // public async Task<IActionResult> ConfirmEmail(string id)
-        // {
-        //     var userInDb = _db.ApplicationUsers.Find(id);
-        //
-        //     if (userInDb == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //
-        //     ConfirmEmailVM confirmEmailVm = new ConfirmEmailVM()
-        //     {
-        //         Email = userInDb.Email
-        //     };
-        //
-        //     return View(confirmEmailVm);
-        // }
-        //
-        // [HttpPost]
-        // public async Task<IActionResult> ConfirmEmail(ConfirmEmailVM confirmEmailVm)
-        // {
-        //     if (ModelState.IsValid)
-        //     {
-        //         var userInDb = await _userManager.FindByEmailAsync(confirmEmailVm.Email);
-        //         if (userInDb != null)
-        //         {
-        //             var token = await _userManager.GeneratePasswordResetTokenAsync(userInDb);
-        //             return RedirectToAction("ResetPassword", "Users",
-        //                 new {token = token, email = userInDb.Email});
-        //         }
-        //     }
-        //
-        //     return View(confirmEmailVm);
-        // }
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string id)
+        {
+            var userInDb = _db.ApplicationUsers.Find(id);
+        
+            if (userInDb == null)
+            {
+                return NotFound();
+            }
+        
+            ConfirmEmailVM confirmEmailVm = new ConfirmEmailVM()
+            {
+                Email = userInDb.Email
+            };
+        
+            return View(confirmEmailVm);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailVM confirmEmailVm)
+        {
+            if (ModelState.IsValid)
+            {
+                var userInDb = await _userManager.FindByEmailAsync(confirmEmailVm.Email);
+                if (userInDb != null)
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(userInDb);
+                    return RedirectToAction("ResetPassword", "Users",
+                        new {token = token, email = userInDb.Email});
+                }
+            }
+        
+            return View(confirmEmailVm);
+        }
 
         //======================= RESET PASSWORD ===========================
         [HttpGet]

@@ -1,4 +1,3 @@
-using System;
 
 namespace Comp1640.Models
 {

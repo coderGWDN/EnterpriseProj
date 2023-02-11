@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,6 +5,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Comp1640.Models;
+using Comp1640.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,14 +18,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Comp1640.Areas.Identity.Pages.Account
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = SD.Role_ADMIN)]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -68,6 +68,7 @@ namespace Comp1640.Areas.Identity.Pages.Account
             
             [Required] public string FullName { get; set; }
             [Required] public string Address { get; set; }
+            [Required] public string Role { get; set; }
             public IEnumerable<SelectListItem> RoleList { get; set; }
 
         }
@@ -93,14 +94,27 @@ namespace Comp1640.Areas.Identity.Pages.Account
                     FullName = Input.FullName,
                     Address = Input.Address
                 };
-                
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    await _userManager.AddToRoleAsync(user, "");
+                    if (Input.Role == SD.Role_ADMIN)
+                    {
+                        await _userManager.AddToRoleAsync(user, SD.Role_ADMIN);
+                    }
                     
+                    if (Input.Role == SD.Role_STAFF)
+                    {
+                        await _userManager.AddToRoleAsync(user, SD.Role_STAFF);
+                    }
+                    
+                    if (Input.Role == SD.Role_QA)
+                    {
+                        await _userManager.AddToRoleAsync(user, SD.Role_QA);
+                    }
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
@@ -122,6 +136,7 @@ namespace Comp1640.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
@@ -137,7 +152,7 @@ namespace Comp1640.Areas.Identity.Pages.Account
         {
             Input = new InputModel()
             {
-                RoleList = _roleManager.Roles.Where(a=> a.Name != "Admin").Select(a => a.Name).Select(a => new SelectListItem
+                RoleList = _roleManager.Roles.Where(a=> a.Name != SD.Role_ADMIN).Select(a => a.Name).Select(a => new SelectListItem
                 {
                     Text = a,
                     Value = a

@@ -1,16 +1,18 @@
-﻿@model IList<HaT7FptBook.Models.ApplicationUser>
+﻿@model IList<Comp1640.Models.ApplicationUser>
 
 @{
     ViewBag.Title = "View all User";
     Layout = "_Layout";
 }
 
-@* <h2>List User</h2> *@
-@* <a href="/Identity/Account/Register" class="btn btn-primary">Create new User</a> *@
-
-@* <form class="form-inline my-2 my-lg-0 float-right"> *@
-@*     <input id="myInput" class="form-control mr-sm-2" type="text" placeholder="Search"> *@
-@* </form> *@
+<h2>List User</h2>
+<div class="d-flex justify-content-between mb-4">
+    <a href="/Identity/Account/Register" class="btn btn-primary">Create new User</a>
+    
+    <form class="form-inline my-2 my-lg-0 float-right">
+        <input id="myInput" class="form-control mr-sm-2" type="text" placeholder="Search">
+    </form>
+</div>
 
 <div class="card shadow mb-4">
     <partial name="_StatusMessenger" model="@ViewData["Message"]"/>
@@ -71,16 +73,16 @@
     </div>
 </div>
 
-@* @section Scripts *@
-@* { *@
-@*     <script> *@
-@*     $(document).ready(function(){ *@
-@*             $("#myInput").on("keyup", function() { *@
-@*                 var value = $(this).val().toLowerCase(); *@
-@*                 $("#tblData tr").filter(function() { *@
-@*                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1) *@
-@*                 }); *@
-@*             }); *@
-@*         }); *@
-@*     </script> *@
-@* } *@
+@section Scripts
+{
+    <script>
+    $(document).ready(function(){
+            $("#myInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#tblData tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}

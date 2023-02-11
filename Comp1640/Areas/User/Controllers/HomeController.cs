@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Comp1640.Models;
+using Comp1640.Utility;
 
 namespace Comp1640.Areas.User.Controllers
 {
+    [Area(SD.Area_User)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

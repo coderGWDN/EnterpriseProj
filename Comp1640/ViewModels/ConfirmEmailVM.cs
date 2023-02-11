@@ -1,4 +1,4 @@
-﻿namespace HaT7FptBook.ViewModels
+﻿namespace Comp1640.ViewModels
 {
     public class ConfirmEmailVM
     {

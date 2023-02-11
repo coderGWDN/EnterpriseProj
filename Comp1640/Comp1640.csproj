@@ -16,5 +16,15 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.14" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.4" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\ResetPassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Update.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Users\ConfirmEmail.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Users\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Users\ResetPassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Users\Update.cshtml" />
     </ItemGroup> 
 </Project>
