@@ -6,7 +6,7 @@ using Comp1640.Utility;
 
 namespace Comp1640.Areas.User.Controllers
 {
-    [Area(SD.Area_User)]
+    [Area(SD.Area_STAFF)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

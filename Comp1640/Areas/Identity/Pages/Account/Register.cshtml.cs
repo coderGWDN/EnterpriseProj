@@ -110,9 +110,14 @@ namespace Comp1640.Areas.Identity.Pages.Account
                         await _userManager.AddToRoleAsync(user, SD.Role_STAFF);
                     }
                     
-                    if (Input.Role == SD.Role_QA)
+                    if (Input.Role == SD.Role_QA_MANAGER)
                     {
-                        await _userManager.AddToRoleAsync(user, SD.Role_QA);
+                        await _userManager.AddToRoleAsync(user, SD.Role_QA_MANAGER);
+                    }
+
+                    if (Input.Role == SD.Role_QA_COORDINATOR)
+                    {
+                        await _userManager.AddToRoleAsync(user, SD.Role_QA_COORDINATOR);
                     }
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

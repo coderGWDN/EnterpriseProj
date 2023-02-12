@@ -79,7 +79,7 @@ namespace Comp1640
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{area=User}/{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{area=Staff}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

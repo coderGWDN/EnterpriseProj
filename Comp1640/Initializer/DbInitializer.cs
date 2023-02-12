@@ -36,13 +36,24 @@ namespace Comp1640.Initializer
                 // ignored
             }
             
-            if (_db.Roles.Any(r => r.Name == SD.Role_QA)) return;
+            if (_db.Roles.Any(r => r.Name == SD.Role_QA_COORDINATOR)) return;
+            if (_db.Roles.Any(r => r.Name == SD.Role_QA_MANAGER)) return;
             if (_db.Roles.Any(r => r.Name == SD.Role_STAFF)) return;
             if (_db.Roles.Any(r => r.Name == SD.Role_ADMIN)) return;
             
-            _roleManager.CreateAsync(new IdentityRole(SD.Role_QA)).GetAwaiter().GetResult();
+            _roleManager.CreateAsync(new IdentityRole(SD.Role_QA_COORDINATOR)).GetAwaiter().GetResult();
+            _roleManager.CreateAsync(new IdentityRole(SD.Role_QA_MANAGER)).GetAwaiter().GetResult();
             _roleManager.CreateAsync(new IdentityRole(SD.Role_STAFF)).GetAwaiter().GetResult();
             _roleManager.CreateAsync(new IdentityRole(SD.Role_ADMIN)).GetAwaiter().GetResult();
+
+            // create default department
+            var department = new Department()
+            {
+                Name = "Default"
+            };
+
+            _db.Add(department);
+            _db.SaveChanges();
 
             _userManager.CreateAsync(new ApplicationUser()
             {
@@ -50,7 +61,8 @@ namespace Comp1640.Initializer
                 Email = "admin@gmail.com",
                 EmailConfirmed = true, 
                 FullName = "Admin",
-                Address = "Đà Nẵng"
+                Address = "Đà Nẵng",
+                DepartmentId = department.Id
             }, "Admin123@").GetAwaiter().GetResult();
             
             ApplicationUser admin = _db.ApplicationUsers.Where(u => u.Email == "admin@gmail.com").FirstOrDefault();
