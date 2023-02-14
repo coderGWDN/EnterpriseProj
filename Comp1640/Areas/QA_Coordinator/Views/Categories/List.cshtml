@@ -31,9 +31,9 @@
             <td>
                 <a asp-action="Update" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    <a id="btnDelete" class="btn btn-danger" data-toggle="modal"
-                   data-target="#DeleteModal-@item.Id" style='margin-left:5px'><i class='fa fa-trash'></i> Delete</a>
+                
+                    <button id="btnDelete" class="btn btn-danger" data-toggle="modal"
+                   data-target="#DeleteModal-@item.Id" style='margin-left:5px'><i class='fa fa-trash'></i> Delete</button>
                     @using (Html.BeginForm("DeleteConfirmed", "Categories", new { id = item.Id }, FormMethod.Post, null,null))
                     {
                         @Html.AntiForgeryToken()
