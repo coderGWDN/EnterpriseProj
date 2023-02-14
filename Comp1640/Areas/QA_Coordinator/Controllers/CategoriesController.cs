@@ -3,6 +3,7 @@ using Comp1640.Models;
 using Comp1640.Utility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewComponents;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -109,25 +110,17 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             }
         }
 
-        // GET: CategoriesController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(List));
-            }
-            catch
-            {
-                return View();
-            }
+            var category = await _db.Categories.FindAsync(id);
+            _db.Categories.Remove(category);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(List));
+            
         }
     }
 }
