@@ -77,7 +77,8 @@ namespace Comp1640.Areas.Identity.Pages.Account
 
             [Required]
             public string Department { get; set; }
-
+            [Required]
+            public int DepartmentID { get; set; }
             public IEnumerable<SelectListItem> DepartmentList { get; set; }
 
         }
@@ -95,6 +96,7 @@ namespace Comp1640.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                var department = Input.Department;
                 var user = new ApplicationUser()
                 {
                     UserName = Input.Email,
@@ -102,7 +104,7 @@ namespace Comp1640.Areas.Identity.Pages.Account
                     EmailConfirmed = true,
                     FullName = Input.FullName,
                     Address = Input.Address,
-                    
+                    DepartmentId = Input.DepartmentID
                 };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -177,7 +179,7 @@ namespace Comp1640.Areas.Identity.Pages.Account
                 DepartmentList = _db.Departments.Select(a => a.Name).Select(a => new SelectListItem
                 {
                     Text = a,
-                    Value =a
+                    Value = a
 
                 })
             };
