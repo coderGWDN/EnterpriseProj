@@ -38,6 +38,5 @@
 
     <ItemGroup>
       <Folder Include="Areas\QA_Manager\Controllers\" />
-      <Folder Include="Areas\QA_Coordinator\Controllers\" />
     </ItemGroup> 
 </Project>
