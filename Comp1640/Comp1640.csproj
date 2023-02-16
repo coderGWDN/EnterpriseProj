@@ -5,6 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Areas\QA_Coordinator\Controllers\**" />
+      <Content Remove="Areas\QA_Coordinator\Controllers\**" />
+      <EmbeddedResource Remove="Areas\QA_Coordinator\Controllers\**" />
+      <None Remove="Areas\QA_Coordinator\Controllers\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.4" />
@@ -30,6 +37,5 @@
 
     <ItemGroup>
       <Folder Include="Areas\QA_Manager\Controllers\" />
-      <Folder Include="Areas\QA_Coordinator\Controllers\" />
     </ItemGroup> 
 </Project>
