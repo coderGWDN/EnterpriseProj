@@ -44,7 +44,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Department department)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 ViewBag.message = "Error: Insert failed!";
                 return View(department);
