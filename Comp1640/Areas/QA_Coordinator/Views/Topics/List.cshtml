@@ -5,12 +5,7 @@
 <p>
 	<a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
-@if (ViewBag.Message != null)
-{
-	<div class="alert alert-success" role="alert">
-		@ViewBag.Message
-	</div>
-}
+<partial name="_StatusMessenger" model="@ViewData["message"]" />
 <table class="table">
 	<thead>
 		<tr>
@@ -40,7 +35,7 @@
 					@Html.DisplayFor(modelItem => item.FinalClosureDate)
 				</td>
 				<td>
-					<a asp-action="Update" asp-route-id="@item.Id">Edit</a> |
+					<button type="button" class="btn btn-outline-primary"><a asp-action="Update" asp-route-id="@item.Id">Edit</a></button> |
 
 					<button id="btnDelete" class="btn btn-danger" data-toggle="modal"
 						data-target="#DeleteModal-@item.Id" style='margin-left:5px'>

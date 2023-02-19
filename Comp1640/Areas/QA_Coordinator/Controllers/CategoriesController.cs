@@ -1,6 +1,7 @@
 ﻿using Comp1640.Data;
 using Comp1640.Models;
 using Comp1640.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
@@ -21,24 +22,21 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
         [HttpGet]
         // GET: CategoriesController
+        [Authorize(Roles = SD.Role_QA_MANAGER)]
         public IActionResult List()
         {
             var data = _db.Categories.ToList();
-            if(data == null)
+            if (data == null)
             {
-                ViewBag.message = "Category is null";
+                ViewBag.message = "Error: Category is null";
                 return RedirectToAction(nameof(List));
             }
             return View(data);
         }
 
-        // GET: CategoriesController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: CategoriesController/Create
+        [Authorize(Roles = SD.Role_QA_MANAGER)]
+
         public IActionResult Create()
         {
             return View();
@@ -47,80 +45,72 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: CategoriesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.Role_QA_MANAGER)]
+
         public async Task<IActionResult> Create(Category category)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var name = category.Name;
-                if(name != null)
-                {
-                    var count = _db.Categories.Where(c => c.Name.Contains(name)).Count();
-                    if (count > 0)
-                    {
-                        ViewBag.message = "Name Category already exists";
-                        return View();
-
-                    }
-                    _db.Add(category);
-                    _db.SaveChanges();
-                    ViewBag.Message = "Add Category successfully";
-                    return RedirectToAction(nameof(List));
-                }
+                ViewBag.message = "Error: Insert failed!";
+                return View(category);
             }
-            ViewBag.message = "Insert failed!";
-            return View(category);
+
+            var isCategoryNameExisted = _db.Categories.Any(c => c.Name.ToLower().Trim() == category.Name.ToLower().Trim());
+            if (isCategoryNameExisted)
+            {
+                ViewBag.message = "Error: Name Category already exists";
+                return View();
+
+            }
+
+            _db.Add(category);
+            _db.SaveChanges();
+
+            ViewBag.Message = "Add Category successfully";
+            return RedirectToAction(nameof(List));
         }
 
         [HttpGet]
         // GET: CategoriesController/Edit/5
+        [Authorize(Roles = SD.Role_QA_MANAGER)]
+
         public IActionResult Update(int id)
         {
-            if(id < 0)
-            {
-                ViewBag.meesage = "Id Category not found";
-                return RedirectToAction(nameof(List));
-
-            }
-            else
-            {
-                var data = _db.Categories.Where(c => c.Id == id).SingleOrDefault();
-                return View(data);
-            }
+            var data = _db.Categories.Where(c => c.Id == id).SingleOrDefault();
+            return View(data);
         }
 
         // POST: CategoriesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.Role_QA_MANAGER)]
+
         public async Task<IActionResult> Update(int id, Category category)
         {
-            if(id < 0)
-            {
-                return NotFound();
-            }
-            else
-            {
                 var data = _db.Categories.FirstOrDefault(c => c.Id == id);
-                if(data != null)
+                if (data != null)
                 {
                     data.Name = category.Name;
                     _db.SaveChanges();
                     return RedirectToAction(nameof(List));
                 }
                 return View();
-            }
+            
         }
 
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.Role_QA_MANAGER)]
+
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             var category = await _db.Categories.FindAsync(id);
             _db.Categories.Remove(category);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(List));
-            
+
         }
     }
 }

@@ -34,9 +34,5 @@
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Users\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Users\ResetPassword.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\Users\Users\Update.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Areas\QA_Manager\Controllers\" />
     </ItemGroup> 
 </Project>
