@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Comp1640.Data;
 using Comp1640.Models;
 using Comp1640.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -26,19 +28,22 @@ namespace Comp1640.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
-        
+        private readonly ApplicationDbContext _db;
+
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext db)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _db = db;
         }
 
         [BindProperty]
@@ -71,6 +76,10 @@ namespace Comp1640.Areas.Identity.Pages.Account
             [Required] public string Role { get; set; }
             public IEnumerable<SelectListItem> RoleList { get; set; }
 
+            [Required]
+            public string DepartmentID { get; set; }
+            public IEnumerable<SelectListItem> DepartmentList { get; set; }
+
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -93,7 +102,7 @@ namespace Comp1640.Areas.Identity.Pages.Account
                     EmailConfirmed = true,
                     FullName = Input.FullName,
                     Address = Input.Address,
-                   
+                    DepartmentId = Convert.ToInt32(Input.DepartmentID)
                 };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -120,6 +129,8 @@ namespace Comp1640.Areas.Identity.Pages.Account
                     {
                         await _userManager.AddToRoleAsync(user, SD.Role_QA_COORDINATOR);
                     }
+
+                    
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -158,10 +169,15 @@ namespace Comp1640.Areas.Identity.Pages.Account
         {
             Input = new InputModel()
             {
-                RoleList = _roleManager.Roles.Where(a=> a.Name != SD.Role_ADMIN).Select(a => a.Name).Select(a => new SelectListItem
+                RoleList = _roleManager.Roles.Where(a => a.Name != SD.Role_ADMIN).Select(a => a.Name).Select(a => new SelectListItem
                 {
                     Text = a,
                     Value = a
+                }),
+                DepartmentList = _db.Departments.Select(a => new SelectListItem
+                {
+                    Text = a.Name,
+                    Value = a.Id.ToString()
                 })
             };
         }
