@@ -92,7 +92,8 @@ namespace Comp1640.Areas.Identity.Pages.Account
                     Email = Input.Email,
                     EmailConfirmed = true,
                     FullName = Input.FullName,
-                    Address = Input.Address
+                    Address = Input.Address,
+                   
                 };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);

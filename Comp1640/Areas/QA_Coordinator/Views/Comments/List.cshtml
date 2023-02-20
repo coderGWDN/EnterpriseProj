@@ -1,0 +1,68 @@
+﻿@model IEnumerable<Comp1640.Models.Comment>
+
+
+@{
+    ViewBag.Title = "List";
+}
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewBag.Message
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Content)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+
+                    <button id="btnDelete" class="btn btn-danger" data-toggle="modal"
+                        data-target="#DeleteModal-@item.Id" style='margin-left:5px'>
+                        <i class='fa fa-trash'></i> Delete
+                    </button>
+                    @using (Html.BeginForm("DeleteConfirmed", "Comments", new { id = item.Id }, FormMethod.Post, null, null))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="modal" tabindex="-1" role="dialog" id="DeleteModal-@item.Id">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Delete Confirmation</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete?</p>
+                                        <p>@Html.DisplayFor(modelItem => item.Content)</p>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
