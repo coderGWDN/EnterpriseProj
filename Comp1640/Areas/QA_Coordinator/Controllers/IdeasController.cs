@@ -33,9 +33,10 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         }
 
         // GET: IdealsController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var ideas = _db.Ideas.Include(i => i.Category).Include(i => i.Topic).Include(i => i.User).AsNoTracking();
+            return View(await ideas.ToListAsync());
         }
 
         // GET: IdealsController/Create
@@ -51,26 +52,12 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Idea idea)
         {
-            if (!ModelState.IsValid)
-            {
-                PopulateCategoriesDropDownList(idea.CategoryID);
-                PopulateTopicsDropDownList(idea.TopicID);
-                return View(idea);
-            }
-
-            var content = idea.Content;
-            var count = _db.Ideas.Where(i => i.Content.Contains(content)).Count();
             idea.CreatedDate = System.DateTime.Now;
-            string thisUser = GetUserId();
-            idea.UserID = thisUser;
-            if (content == null)
+            string thisUserID = _userManager.GetUserId(HttpContext.User);
+            idea.UserID = GetUserId();
+            if (idea.Content == null)
             {
                 ViewBag.message = "Content is not null";
-                return RedirectToAction(nameof(Create));
-            }
-            else if (count < 0)
-            {
-                ViewBag.message = "Content is exist";
                 return RedirectToAction(nameof(Create));
             }
 

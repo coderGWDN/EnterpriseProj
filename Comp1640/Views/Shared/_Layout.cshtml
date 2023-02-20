@@ -30,13 +30,16 @@
                                 <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Departments" asp-action="List">Departments</a>
                             </li>
                     }
-                    @if (User.IsInRole(SD.Area_QA_Manager))
+                    @if (User.IsInRole(SD.Role_QA_MANAGER))
                     { 
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Categories" asp-action="List">Create Departments</a>
+                        <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Categories" asp-action="List">Categories</a>
                     </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Topics" asp-action="List">Create Departments</a>
+                                <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Topics" asp-action="List">Topics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="Index">List Ideas</a>
                             </li>
                     }
                     @if(User.IsInRole(SD.Role_QA_COORDINATOR)){

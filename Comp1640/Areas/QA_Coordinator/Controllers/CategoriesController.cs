@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
+    [Authorize(Roles = SD.Role_QA_MANAGER)]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -22,7 +23,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
         [HttpGet]
         // GET: CategoriesController
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
         public IActionResult List()
         {
             var data = _db.Categories.ToList();
@@ -45,7 +45,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: CategoriesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
 
         public async Task<IActionResult> Create(Category category)
         {
@@ -72,7 +71,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
         [HttpGet]
         // GET: CategoriesController/Edit/5
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
 
         public IActionResult Update(int id)
         {
@@ -83,7 +81,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: CategoriesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
 
         public async Task<IActionResult> Update(int id, Category category)
         {
@@ -102,7 +99,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
 
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
