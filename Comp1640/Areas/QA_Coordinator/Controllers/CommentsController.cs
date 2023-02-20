@@ -27,7 +27,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // GET: CommentController
         public async Task<IActionResult> List()
         {
-            var comments = _db.Comments.AsNoTracking();
+            var comments = _db.Comments.Include(i => i.IdealID).Include(i => i.UserID).AsNoTracking();
             return View(await comments.ToListAsync());
         }
 
@@ -42,7 +42,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: CommentController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("Content,DateTime,IdealID")] Comment comment)
+        public async Task<ActionResult> Create(Comment comment)
         {
             if (comment != null)
             {   
@@ -63,7 +63,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     return RedirectToAction(nameof(Create));
                 }
 
-                _db.Add(comment);
+                _db.Comments.Add(comment);
                 await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(List));
             }
@@ -90,5 +90,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             return RedirectToAction(nameof(List));
 
         }
+
+        
+
     }
 }
