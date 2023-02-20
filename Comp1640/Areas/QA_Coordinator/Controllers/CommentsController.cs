@@ -27,7 +27,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // GET: CommentController
         public async Task<IActionResult> List()
         {
-            var comments = _db.Comments.Include(i => i.IdealID).Include(i => i.UserID).AsNoTracking();
+            var comments = _db.Comments.AsNoTracking();
             return View(await comments.ToListAsync());
         }
 
