@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Formats.Asn1.AsnWriter;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
@@ -50,8 +53,18 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: IdealsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Idea idea)
+        public async Task<IActionResult> Create(IFormFile file, Idea idea)
         {
+            if(file != null)
+            {
+                string fileName = idea.Id.ToString() + Path.GetFileName(file.FileName);
+                string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/file", fileName);
+                using (var stream = new FileStream(savePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                idea.FilePath = "/file/" + fileName;
+            }
             idea.CreatedDate = System.DateTime.Now;
             string thisUserID = _userManager.GetUserId(HttpContext.User);
             idea.UserID = GetUserId();

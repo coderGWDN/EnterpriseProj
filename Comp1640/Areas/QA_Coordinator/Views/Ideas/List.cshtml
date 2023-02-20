@@ -55,7 +55,7 @@
                         data-target="#DeleteModal-@item.Id" style='margin-left:5px'>
                         <i class='fa fa-trash'></i> Delete
                     </button>
-                    @using (Html.BeginForm("DeleteConfirmed", "Ideals", new { id = item.Id }, FormMethod.Post, null, null))
+                    @using (Html.BeginForm("DeleteConfirmed", "Ideas", new { id = item.Id }, FormMethod.Post, null, null))
                     {
                         @Html.AntiForgeryToken()
                         <div class="modal" tabindex="-1" role="dialog" id="DeleteModal-@item.Id">
