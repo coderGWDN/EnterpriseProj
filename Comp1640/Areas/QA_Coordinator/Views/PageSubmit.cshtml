@@ -1,0 +1,331 @@
+﻿<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+      integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/main.css" />
+
+<!-- create post -->
+<div class="bg-white p-3 mt-3 rounded border shadow">
+    <!-- avatar -->
+    <div class="d-flex" type="button">
+        <div class="p-1">
+            <img src="https://source.unsplash.com/collection/happy-people"
+                 alt="avatar"
+                 class="rounded-circle me-2"
+                 style="width: 36px; height: 36px; object-fit: cover" />
+        </div>
+        <input type="text"
+               class="form-control rounded-pill border-0 bg-gray pointer"
+               disabled
+               placeholder="What's on your mind, John?"
+               data-bs-toggle="modal"
+               data-bs-target="#createModal" style="height: 44px;" />
+    </div>
+
+    <!-- create modal -->
+    <div class="modal fade"
+         id="createModal"
+         tabindex="-1"
+         aria-labelledby="createModalLabel"
+         aria-hidden="true"
+         data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!-- head -->
+                <div class="modal-header align-items-center">
+                    <h5 class="text-dark text-center w-100 m-0"
+                        id="exampleModalLabel">
+                        Create Post
+                    </h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <!-- body -->
+                <div class="modal-body">
+                    <div class="my-1 p-1">
+                        <div class="d-flex flex-column">
+                            <!-- name -->
+                            <div class="d-flex align-items-center">
+                                <div class="p-2">
+                                    <img src="https://source.unsplash.com/collection/happy-people"
+                                         alt="from fb"
+                                         class="rounded-circle"
+                                         style="
+                                  width: 38px;
+                                  height: 38px;
+                                  object-fit: cover;
+                                " />
+                                </div>
+                                <div>
+                                    <p class="m-0 fw-bold">John</p>
+                                    <select class="form-select border-0 bg-gray w-75 fs-7"
+                                            aria-label="Default select example">
+                                        <option selected value="1">Public</option>
+                                        <option value="2">Pin To Top</option>
+                                        <option value="3">Hide</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- text -->
+                            <input type="email"
+                                   class="form-control my-3"
+                                   placeholder="Mobile number or email address" />
+                            <div>
+                                <div class="form-floating">
+                                    <textarea class="form-control"
+                                              placeholder="Leave a comment here"
+                                              id="floatingTextarea2"
+                                              style="height: 100px"></textarea>
+                                    <label for="floatingTextarea2">Comments</label>
+                                </div>
+                                <div>
+                                    <select class="form-select mt-3">
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- emoji  -->
+                            <input class="form-check-input mt-3 ms-auto"
+                                   id="checkbox"
+                                   type="checkbox"
+                                   value=""
+                                   aria-label="Checkbox for following text input" />
+                            <!-- options -->
+                            <!-- <div
+                              class="d-flex justify-content-between border border-1 border-light rounded p-3 mt-3"
+                            >
+                              <p class="m-0">Add to your post</p>
+                              <div>
+                                <i
+                                  class="fas fa-images fs-5 text-success pointer mx-1"
+                                ></i>
+                                <i
+                                  class="fas fa-user-check fs-5 text-primary pointer mx-1"
+                                ></i>
+                                <i
+                                  class="far fa-smile fs-5 text-warning pointer mx-1"
+                                ></i>
+                                <i
+                                  class="fas fa-map-marker-alt fs-5 text-info pointer mx-1"
+                                ></i>
+                                <i
+                                  class="fas fa-microphone fs-5 text-danger pointer mx-1"
+                                ></i>
+                                <i
+                                  class="fas fa-ellipsis-h fs-5 text-muted pointer mx-1"
+                                ></i>
+                              </div>
+                            </div> -->
+                        </div>
+                    </div>
+
+                    <!-- end -->
+                </div>
+                <!-- footer -->
+                <div class="modal-footer">
+                    <button type="button"
+                            id="btn-post"
+                            class="btn btn-primary w-100"
+                            disabled
+                            data-bs-dismiss="modal">
+                        Post
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+</div>
+
+
+<!-- p 1 -->
+<div class="bg-white p-4 rounded shadow mt-3">
+    <!-- author -->
+    <div class="d-flex justify-content-between">
+        <!-- avatar -->
+        <div class="d-flex">
+            <img src="https://source.unsplash.com/collection/happy-people"
+                 alt="avatar"
+                 class="rounded-circle me-2"
+                 style="width: 48px; height: 48px; object-fit: cover" />
+            <div>
+                <p class="m-0 fw-bold">&nbsp;John</p>
+                <span class="text-muted fs-7">&nbsp;July 17 at 1:23 pm</span>
+            </div>
+        </div>
+        <!-- edit -->
+        <i class="fas fa-ellipsis-h"
+           type="button"
+           id="post1Menu"
+           data-bs-toggle="dropdown"
+           aria-expanded="false"></i>
+        <!-- edit menu -->
+        <ul class="dropdown-menu border-0 shadow"
+            aria-labelledby="post1Menu">
+            <li class="d-flex align-items-center">
+                <a class="dropdown-item d-flex justify-content-around align-items-center fs-7"
+                   href="#">
+                    Edit Post
+                </a>
+            </li>
+            <li class="d-flex align-items-center">
+                <a class="dropdown-item d-flex justify-content-around align-items-center fs-7"
+                   href="#">
+                    Delete Post
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- post content -->
+    <div class="mt-3">
+        <!-- content -->
+        <div>
+            <p>
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                Quae fuga incidunt consequatur tenetur doloremque officia
+                corrupti provident tempore vitae labore?
+            </p>
+            <img src="https://source.unsplash.com/random/12"
+                 alt="post image"
+                 class="img-fluid rounded" style="width: 65%;height:600px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);" />
+        </div>
+        <!-- likes & comments -->
+        <div class="post__comment mt-3 position-relative">
+            <!-- likes -->
+            <div class="d-flex align-items-center top-0 start-0 position-absolute"
+                 style="height: 50px; z-index: 5">
+                <div class="me-2">
+                    <i class="text-primary fas fa-thumbs-up"></i>
+                    <i class="text-danger fab fa-gratipay"></i>
+                    <i class="text-warning fas fa-grin-squint"></i>
+                </div>
+                <p class="m-0 text-muted fs-7">Phu, Tuan, and 3 others</p>
+            </div>
+            <!-- comments start-->
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item border-0">
+                    <!-- comment collapse -->
+                    <h2 class="accordion-header" id="headingTwo">
+                        <div class="accordion-button collapsed pointer d-flex justify-content-end"
+                             data-bs-toggle="collapse"
+                             data-bs-target="#collapsePost1"
+                             aria-expanded="false"
+                             aria-controls="collapsePost1">
+                            <p class="m-0">2 Comments</p>
+                        </div>
+                    </h2>
+                    <hr />
+                    <!-- comment & like bar -->
+                    <div class="d-flex justify-content-around">
+                        <div class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1">
+                            <i class="fas fa-thumbs-up me-3"></i>
+                            &nbsp;
+                            <p class="m-0">Like</p>
+                        </div>
+                        <!-- comment -->
+                        <div class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1"
+                             data-bs-toggle="collapse"
+                             data-bs-target="#collapsePost1"
+                             aria-expanded="false"
+                             aria-controls="collapsePost1">
+                            <i class="fa fa-comments fa-fw fa-lg m-r-3"></i>
+                            &nbsp;
+                            <p class="m-0">Comment</p>
+                        </div>
+                    </div>
+                    <!-- comment expand -->
+                    <div id="collapsePost1"
+                         class="accordion-collapse collapse"
+                         aria-labelledby="headingTwo"
+                         data-bs-parent="#accordionExample">
+                        <hr />
+                        <div class="accordion-body">
+                            <!-- comment 1 -->
+                            <div class="d-flex align-items-center my-1">
+                                <!-- avatar -->
+                                <img src="https://source.unsplash.com/collection/happy-people"
+                                     alt="avatar"
+                                     class="rounded-circle me-2"
+                                     style="
+                                width: 38px;
+                                height: 38px;
+                                object-fit: cover;
+                              " />
+                                <!-- comment text -->
+                                <div class="p-3 rounded comment__input w-100">
+                                    <!-- comment menu of author -->
+                                    <div class="d-flex justify-content-end">
+                                        <!-- icon -->
+                                        <i class="fas fa-ellipsis-h text-blue pointer"
+                                           id="post1CommentMenuButton"
+                                           data-bs-toggle="dropdown"
+                                           aria-expanded="false"></i>
+                                        <!-- menu -->
+                                        <ul class="dropdown-menu border-0 shadow"
+                                            aria-labelledby="post1CommentMenuButton">
+                                            <li class="d-flex align-items-center">
+                                                <a class="dropdown-item d-flex justify-content-around align-items-center fs-7"
+                                                   href="#">
+                                                    Edit Comment
+                                                </a>
+                                            </li>
+                                            <li class="d-flex align-items-center">
+                                                <a class="dropdown-item d-flex justify-content-around align-items-center fs-7"
+                                                   href="#">
+                                                    Delete Comment
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <p class="fw-bold m-0">John</p>
+                                    <p class="m-0 fs-7 bg-gray p-2 rounded">
+                                        Lorem ipsum dolor sit amet, consectetur
+                                        adipiscing elit.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- create comment -->
+                            <form class="d-flex my-1">
+                                <!-- avatar -->
+                                <div>
+                                    <img src="https://source.unsplash.com/collection/happy-people"
+                                         alt="avatar"
+                                         class="rounded-circle me-2"
+                                         style="
+                                  width: 38px;
+                                  height: 38px;
+                                  object-fit: cover;
+                                " />
+                                </div>
+                                &nbsp;
+                                &nbsp;
+                                <!-- input -->
+                                <input type="text"
+                                       class="form-control border-0 rounded-pill bg-gray"
+                                       placeholder="Write a comment" />
+                            </form>
+                            <!-- end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end -->
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+        crossorigin="anonymous"></script>
+<script src="./js/main.js"></script>
