@@ -11,5 +11,8 @@
         public const string Area_QA_COORDINATOR = "QA_Coordinator";
         public const string Area_STAFF = "Staff";
         public const string Area_QA_Manager = "QA_Manager";
+
+
+        public int MyProperty { get; set; }
     }
 }
