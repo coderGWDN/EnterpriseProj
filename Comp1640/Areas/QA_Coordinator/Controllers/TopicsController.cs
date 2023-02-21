@@ -4,6 +4,7 @@ using Comp1640.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         }
 
         // GET: TopicsController
-        public ActionResult List()
+        public IActionResult List()
         {
             var data = _db.Topics.ToList();
             if (data == null)
@@ -61,7 +62,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             }
             int result = DateTime.Compare(currentDate, clousureDate);
             int finalResult = DateTime.Compare(clousureDate, finalClosureDate);
-            var isTopicNameExisted = _db.Topics.Any(c => c.Name.ToLower().Trim() == topic.Name.ToLower().Trim());
+            var isTopicNameExisted = await _db.Topics
+                .AnyAsync(c => c.Name.ToLower().Trim() == topic.Name.ToLower().Trim());
             if (isTopicNameExisted)
             {
                 ViewBag.message = "Error: Name Category already exists";
@@ -91,7 +93,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // GET: Topic/Edit/5
         public async Task<ActionResult> Update(int id)
         {
-                var data = _db.Topics.Where(c => c.Id == id).SingleOrDefault();
+                var data = await _db.Topics.Where(c => c.Id == id).SingleOrDefaultAsync();
                 return View(data);
         }
 
@@ -100,11 +102,11 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, Topic topic)
         {
-                var data = _db.Topics.FirstOrDefault(c => c.Id == id);
+                var data = await _db.Topics.FirstOrDefaultAsync(c => c.Id == id);
                 if (data != null)
                 {
                     data.Name = topic.Name;
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                     return RedirectToAction(nameof(List));
                 }
                 return View();

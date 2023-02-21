@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    public class CommentsController : Controller
+    public class CommentsController : BaseController
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
@@ -30,7 +30,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             var comments = _db.Comments.AsNoTracking();
             return View(await comments.ToListAsync());
         }
-
        
 
         // GET: CommentController/Create
@@ -63,7 +62,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     return RedirectToAction(nameof(Create));
                 }
 
-                _db.Comments.Add(comment);
+                _db.Add(comment);
                 await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(List));
             }

@@ -4,6 +4,7 @@ using Comp1640.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,7 +51,9 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 return View(department);
             }
             var name = department.Name;
-            var isDepartmentNameExisted = _db.Categories.Any(c => c.Name.ToLower().Trim() == department.Name.ToLower().Trim());
+            var isDepartmentNameExisted = await _db.Categories
+                .AnyAsync(c => c.Name.ToLower().Trim() == department.Name.ToLower().Trim());
+
             if (isDepartmentNameExisted)
             {
                 ViewBag.message = "Error: Name Department already exists";
@@ -90,7 +93,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         public async Task<IActionResult> Update(int id, Department department)
         {
 
-                var data = _db.Departments.FirstOrDefault(c => c.Id == id);
+                var data = await _db.Departments.FirstOrDefaultAsync(c => c.Id == id);
                 if (data != null)
                 {
                     data.Name = department.Name;

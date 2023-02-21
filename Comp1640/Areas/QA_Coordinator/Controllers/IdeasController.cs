@@ -28,14 +28,24 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // GET: IdealsController
         public async Task<IActionResult> List()
         {
-            var ideas = _db.Ideas.Include(i => i.Category).Include(i => i.Topic).Include(i => i.User).AsNoTracking();
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+            
             return View(await ideas.ToListAsync());
         }
 
         // GET: IdealsController/Details/5
         public async Task<IActionResult> Index()
         {
-            var ideas = _db.Ideas.Include(i => i.Category).Include(i => i.Topic).Include(i => i.User).AsNoTracking();
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+
             return View(await ideas.ToListAsync());
         }
 
