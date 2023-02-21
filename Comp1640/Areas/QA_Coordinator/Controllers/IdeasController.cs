@@ -51,7 +51,16 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
             return View(await ideas.ToListAsync());
         }
+        public async Task<IActionResult> PageSubmit()
+        {
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
 
+            return View(await ideas.ToListAsync());
+        }
         // GET: IdealsController/Create
         public IActionResult Create()
         {
