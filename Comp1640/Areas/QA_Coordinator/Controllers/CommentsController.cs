@@ -30,7 +30,16 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             var comments = _db.Comments.AsNoTracking();
             return View(await comments.ToListAsync());
         }
-       
+
+        public async Task<IActionResult> Edit()
+        {
+            var comments = _db.Comments
+                .Include(i => i.IdealID)
+                .Include(i => i.UserID)
+                .AsNoTracking();
+
+            return View(await comments.ToListAsync());
+        }
 
         // GET: CommentController/Create
         public ActionResult Create()
