@@ -31,14 +31,24 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // GET: IdealsController
         public async Task<IActionResult> List()
         {
-            var ideas = _db.Ideas.Include(i => i.Category).Include(i => i.Topic).Include(i => i.User).AsNoTracking();
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+
             return View(await ideas.ToListAsync());
         }
 
         // GET: IdealsController/Details/5
         public async Task<IActionResult> Index()
         {
-            var ideas = _db.Ideas.Include(i => i.Category).Include(i => i.Topic).Include(i => i.User).AsNoTracking();
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+
             return View(await ideas.ToListAsync());
         }
 
@@ -66,11 +76,10 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 idea.FilePath = "/file/" + fileName;
             }
             idea.CreatedDate = System.DateTime.Now;
-            string thisUserID = _userManager.GetUserId(HttpContext.User);
             idea.UserID = GetUserId();
             if (idea.Content == null)
             {
-                ViewBag.message = "Content is not null";
+                ViewBag.message = "Error: Content is not null";
                 return RedirectToAction(nameof(Create));
             }
 
