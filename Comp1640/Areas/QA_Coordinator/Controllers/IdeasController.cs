@@ -1,12 +1,15 @@
 ﻿using Comp1640.Data;
 using Comp1640.Models;
 using Comp1640.Utility;
+using Comp1640.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -58,8 +61,22 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 .Include(i => i.Topic)
                 .Include(i => i.User)
                 .AsNoTracking();
+            var ideaLists = new List<ListIdeaVM>();
+            foreach(var idea in ideas)
+            {
+                var ideaList = new ListIdeaVM()
+                {
+                    Idea = idea,
+                    Comment = new CommentViewModel()
+                    {
+                        IdealID = idea.Id
+                    },
+                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync()
+                };
+                ideaLists.Add(ideaList);
+            }
 
-            return View(await ideas.ToListAsync());
+            return View(ideaLists);
         }
         // GET: IdealsController/Create
         public IActionResult Create()
@@ -187,6 +204,21 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                               orderby t.Name
                               select t;
             ViewBag.TopicID = new SelectList(topicsQuery.AsNoTracking(), "Id", "Name", selectedTopic);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateComment(CommentViewModel commentView)
+        {
+            var comment = new Comment()
+            {
+                Content = commentView.Content,
+                DateTime = DateTime.Now,
+                UserID = GetUserId(),
+                IdealID = commentView.IdealID
+            };
+            _db.Add(comment);
+            await _db.SaveChangesAsync();   
+            return RedirectToAction(nameof(PageSubmit));
         }
     }
 }
