@@ -7,6 +7,23 @@
     <title>@ViewData["Title"] - Comp1640</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css"/>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="~/lib/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom styles for this page -->
+    <link href="~/lib/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <!-- Page level plugins -->
+    <script src="~/lib/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="~/lib/datatables/datatables-demo.js"></script>
 </head>
 <body>
 <header>
@@ -22,29 +39,31 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    @if(User.IsInRole(SD.Role_ADMIN)){
-                          <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
-                    </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Departments" asp-action="List">Departments</a>
-                            </li>
+                    @if (User.IsInRole(SD.Role_ADMIN))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Departments" asp-action="List">Departments</a>
+                        </li>
                     }
                     @if (User.IsInRole(SD.Area_QA_Manager))
-                    { 
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Categories" asp-action="List">Create Departments</a>
-                    </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Topics" asp-action="List">Create Departments</a>
-                            </li>
-                    }
-                    @if(User.IsInRole(SD.Role_QA_COORDINATOR)){
+                    {
                         <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="List">List Ideas</a>
-                    </li>
+                            <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Categories" asp-action="List">Create Departments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Topics" asp-action="List">Create Departments</a>
+                        </li>
                     }
-                    </ul>
+                    @if (User.IsInRole(SD.Role_QA_COORDINATOR))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="List">List Ideas</a>
+                        </li>
+                    }
+                </ul>
                 <partial name="_LoginPartial"/>
             </div>
         </div>
@@ -61,8 +80,7 @@
         &copy; 2023 - Comp1640 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>
 </footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="~/js/site.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Comp1640.Models;
 using Comp1640.Utility;
 
-namespace Comp1640.Areas.User.Controllers
+namespace Comp1640.Areas.Staff.Controllers
 {
     [Area(SD.Area_STAFF)]
     public class HomeController : Controller

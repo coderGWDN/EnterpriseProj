@@ -8,15 +8,14 @@
 <h2>List User</h2>
 <div class="d-flex justify-content-between mb-4">
     <a href="/Identity/Account/Register" class="btn btn-primary">Create new User</a>
-    
-    <form class="form-inline my-2 my-lg-0 float-right">
-        <input id="myInput" class="form-control mr-sm-2" type="text" placeholder="Search">
-    </form>
 </div>
 
-<div class="card shadow mb-4">
+@if (Model.Any())
+{
+    <div class="card shadow mb-4">
     <partial name="_StatusMessenger" model="@ViewData["Message"]"/>
-    <div class="card-body text-dark" style="background-color: #d3d4d4">
+    
+    <div class="card-body text-dark" style="background-color: #ffffff">
         <div class="table-responsive font-weight-bold">
             <table class="table table-bordered" id="dataTable">
 
@@ -72,6 +71,15 @@
         </div>
     </div>
 </div>
+}
+else
+{
+    <h2 class="text-center">No Value Book</h2>
+    <div class="text-center">
+        <a href="/Identity/Account/Register" class="btn btn-primary">Create new User</a>
+    </div>
+    <partial name="_StatusMessenger" model="@ViewData["Message"]"/>
+}
 
 @section Scripts
 {
