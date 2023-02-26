@@ -24,7 +24,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         }
 
         // GET: TopicsController
-        public ActionResult List()
+        public IActionResult List()
         {
             var data = _db.Topics.ToList();
             if (data == null)
