@@ -1,0 +1,87 @@
+﻿@model Idea
+
+
+<div class="modal fade"
+     id="updateModal-@Model.Id"
+     tabindex="-1"
+     aria-labelledby="updeateModalLabel"
+     aria-hidden="true"
+     data-bs-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form asp-area="QA_Coordinator" asp-controller="Ideas" enctype="multipart/form-data" asp-action="Update" method="post">
+                <!-- head -->
+                <div class="modal-header align-items-center">
+                    <h5 class="text-dark text-center w-100 m-0"
+                        id="exampleModalLabel">
+                        Update Post
+                    </h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <!-- body -->
+                <div class="modal-body">
+                    <div class="my-1 p-1">
+                        <div class="d-flex flex-column">
+                            <!-- name -->
+                            <div class="d-flex align-items-center">
+                                <div class="p-2">
+                                    <img src="https://source.unsplash.com/collection/happy-people"
+                                         alt="from fb"
+                                         class="rounded-circle"
+                                         style="
+                                  width: 38px;
+                                  height: 38px;
+                                  object-fit: cover;
+                                " />
+                                </div>
+                                <div>
+                                    <p class="m-0 fw-bold">John</p>
+                                </div>
+                            </div>
+                            <!-- text -->
+                            <partial name="_StatusMessenger" model="@ViewData["message"]" />
+                            <div>
+                                <input type="hidden" asp-for="Id" />
+                                <div class="form-floating">
+                                    <textarea class="form-control" asp-for="Content"
+                                              placeholder="Content for Idea"
+                                              style="height: 100px"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">File</label>
+                                    <input  type="file" name="file" class="form-control" />
+                                    <span asp-validation-for="FilePath" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Category" class="control-label"></label>
+                                    <select asp-for="CategoryID" class="form-control" asp-items="ViewBag.CategoryID">
+                                        <option value="">-- Select Category --</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Topic" class="control-label"></label>
+                                    <select asp-for="TopicID" class="form-control" asp-items="ViewBag.TopicID">
+                                        <option value="">-- Select Topic --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- emoji  -->
+                        </div>
+                    </div>
+
+                    <!-- end -->
+
+                </div>
+                <!-- footer -->
+                <div class="modal-footer">
+
+                    <input type="submit" value="Update" class="btn btn-primary" />
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,15 +1,21 @@
 ﻿using Comp1640.Data;
 using Comp1640.Models;
 using Comp1640.Utility;
+using Comp1640.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Formats.Asn1.AsnWriter;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
@@ -28,16 +34,54 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // GET: IdealsController
         public async Task<IActionResult> List()
         {
-            var ideas = _db.Ideas.Include(i => i.Category).Include(i => i.Topic).Include(i => i.User).AsNoTracking();
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+
             return View(await ideas.ToListAsync());
         }
 
         // GET: IdealsController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
 
+            return View(await ideas.ToListAsync());
+        }
+        public async Task<IActionResult> PageSubmit()
+        {
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+            var ideaLists = new List<ListIdeaVM>();
+            foreach(var idea in ideas)
+            {
+                var ideaList = new ListIdeaVM()
+                {
+                    Idea = idea,
+                    Comment = new CommentViewModel()
+                    {
+                        IdealID = idea.Id
+                    },
+                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
+
+
+                };
+                PopulateCategoriesDropDownList(idea.CategoryID);
+                PopulateTopicsDropDownList(idea.TopicID);
+                ideaLists.Add(ideaList);
+            }
+
+            return View(ideaLists);
+        }
         // GET: IdealsController/Create
         public IActionResult Create()
         {
@@ -49,28 +93,23 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: IdealsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Idea idea)
+        public async Task<IActionResult> Create(IFormFile file, Idea idea)
         {
-            if (!ModelState.IsValid)
+            if(file != null)
             {
-                PopulateCategoriesDropDownList(idea.CategoryID);
-                PopulateTopicsDropDownList(idea.TopicID);
-                return View(idea);
+                string fileName = idea.Id.ToString() + Path.GetFileName(file.FileName);
+                string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/file", fileName);
+                using (var stream = new FileStream(savePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                idea.FilePath = "/file/" + fileName;
             }
-
-            var content = idea.Content;
-            var count = _db.Ideas.Where(i => i.Content.Contains(content)).Count();
             idea.CreatedDate = System.DateTime.Now;
-            string thisUser = GetUserId();
-            idea.UserID = thisUser;
-            if (content == null)
+            idea.UserID = GetUserId();
+            if (idea.Content == null)
             {
-                ViewBag.message = "Content is not null";
-                return RedirectToAction(nameof(Create));
-            }
-            else if (count < 0)
-            {
-                ViewBag.message = "Content is exist";
+                ViewBag.message = "Error: Content is not null";
                 return RedirectToAction(nameof(Create));
             }
 
@@ -96,7 +135,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: IdealsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, [Bind("Id,Content,FilePath,, CategoryID, TopicID")] Idea idea)
+        public async Task<IActionResult> Update(int id, Idea idea)
         {
             if (id != idea.Id)
             {
@@ -169,6 +208,21 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                               orderby t.Name
                               select t;
             ViewBag.TopicID = new SelectList(topicsQuery.AsNoTracking(), "Id", "Name", selectedTopic);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateComment(CommentViewModel commentView)
+        {
+            var comment = new Comment()
+            {
+                Content = commentView.Content,
+                DateTime = DateTime.Now,
+                UserID = GetUserId(),
+                IdealID = commentView.IdealID
+            };
+            _db.Add(comment);
+            await _db.SaveChangesAsync();   
+            return RedirectToAction(nameof(PageSubmit));
         }
     }
 }

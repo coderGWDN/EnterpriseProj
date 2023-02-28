@@ -22,12 +22,22 @@ namespace Comp1640.Areas.Staff.Controllers
         // GET: IdeasController
         public async Task<IActionResult> List()
         {
-            var ideas = _db.Ideas.Include(i => i.Category).Include(i => i.Topic).Include(i => i.User).AsNoTracking();
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+
             return View(await ideas.ToListAsync());
         }
         public async Task<IActionResult> Index()
         {
-            var ideas = _db.Ideas.Include(i => i.Category).Include(i => i.Topic).Include(i => i.User).AsNoTracking();
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+
             return View(await ideas.ToListAsync());
         }
 

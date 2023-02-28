@@ -5,12 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
+    [Authorize(Roles = SD.Role_QA_MANAGER)]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -22,7 +24,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
         [HttpGet]
         // GET: CategoriesController
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
         public IActionResult List()
         {
             var data = _db.Categories.ToList();
@@ -45,7 +46,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: CategoriesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
 
         public async Task<IActionResult> Create(Category category)
         {
@@ -55,7 +55,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 return View(category);
             }
 
-            var isCategoryNameExisted = _db.Categories.Any(c => c.Name.ToLower().Trim() == category.Name.ToLower().Trim());
+            var isCategoryNameExisted = await _db.Categories.AnyAsync(c => c.Name.ToLower().Trim() == category.Name.ToLower().Trim());
             if (isCategoryNameExisted)
             {
                 ViewBag.message = "Error: Name Category already exists";
@@ -64,7 +64,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             }
 
             _db.Add(category);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             ViewBag.Message = "Add Category successfully";
             return RedirectToAction(nameof(List));
@@ -72,7 +72,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
         [HttpGet]
         // GET: CategoriesController/Edit/5
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
 
         public IActionResult Update(int id)
         {
@@ -83,15 +82,14 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: CategoriesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
 
         public async Task<IActionResult> Update(int id, Category category)
         {
-                var data = _db.Categories.FirstOrDefault(c => c.Id == id);
+                var data = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
                 if (data != null)
                 {
                     data.Name = category.Name;
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                     return RedirectToAction(nameof(List));
                 }
                 return View();
@@ -102,7 +100,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = SD.Role_QA_MANAGER)]
 
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
