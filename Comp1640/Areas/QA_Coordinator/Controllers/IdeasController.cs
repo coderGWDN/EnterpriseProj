@@ -71,8 +71,12 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     {
                         IdealID = idea.Id
                     },
-                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync()
+                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
+
+
                 };
+                PopulateCategoriesDropDownList(idea.CategoryID);
+                PopulateTopicsDropDownList(idea.TopicID);
                 ideaLists.Add(ideaList);
             }
 
@@ -131,7 +135,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: IdealsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, [Bind("Id,Content,FilePath,, CategoryID, TopicID")] Idea idea)
+        public async Task<IActionResult> Update(int id, Idea idea)
         {
             if (id != idea.Id)
             {
