@@ -20,7 +20,7 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles =SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR)]
+    [Authorize(Roles =SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR + "," + SD.Role_STAFF)]
     public class IdeasController : BaseController
     {
         private readonly ApplicationDbContext _db;
