@@ -9,6 +9,8 @@ namespace Comp1640.ViewModels
         public CommentViewModel Comment { get; set; }
 
         public List<Comment> ListComment { get; set; }
+        public React React { get; set; }    
+        public List<React> ListReact { get; set; }
 
     }
 }

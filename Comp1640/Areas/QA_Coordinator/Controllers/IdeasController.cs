@@ -72,6 +72,10 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                         IdealID = idea.Id
                     },
                     ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
+                    React = new React() { 
+                        IdealID = idea.Id
+                    },
+                    ListReact = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Like == 1).ToListAsync(),
 
 
                 };
@@ -79,7 +83,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 PopulateTopicsDropDownList(idea.TopicID);
                 ideaLists.Add(ideaList);
             }
-
+           
             return View(ideaLists);
         }
         // GET: IdealsController/Create
@@ -222,6 +226,25 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             };
             _db.Add(comment);
             await _db.SaveChangesAsync();   
+            return RedirectToAction(nameof(PageSubmit));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Like(React react)
+        {
+            react.UserID = GetUserId(); 
+            var check = await _db.Reacts.Where(r =>r.IdealID == react.IdealID && r.UserID == GetUserId()).FirstOrDefaultAsync();
+            if(check == null)
+            {
+                react.Like = 1;
+                _db.Add(react);
+                await _db.SaveChangesAsync();
+
+                ViewBag.like = "text-primary";
+                return RedirectToAction(nameof(PageSubmit));
+            }
+
+            ViewBag.like = "hellp0";
             return RedirectToAction(nameof(PageSubmit));
         }
     }

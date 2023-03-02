@@ -103,7 +103,7 @@
                         <i class="text-danger fab fa-gratipay"></i>
                         <i class="text-warning fas fa-grin-squint"></i>
                     </div>
-                    <p class="m-0 text-muted fs-7">Phu, Tuan, and 3 others</p>
+                    <p class="m-0 text-muted fs-7">@Model[i].ListReact.Count</p>
                 </div>
                 <!-- comments start-->
                 <div class="accordion" id="accordionExample">
@@ -120,11 +120,10 @@
                         </h2>
                         <hr />
                         <!-- comment & like bar -->
+
                         <div class="d-flex justify-content-around">
                             <div class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1">
-                                <i class="fas fa-thumbs-up me-3"></i>
-                                &nbsp;
-                                <p class="m-0">Like</p>
+                                @await Html.PartialAsync("_Like", Model[i].React)
                             </div>
                             <!-- comment -->
                             <div class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1"
