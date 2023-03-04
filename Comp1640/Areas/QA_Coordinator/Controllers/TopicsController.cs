@@ -1,8 +1,10 @@
 ﻿using Comp1640.Data;
 using Comp1640.Models;
 using Comp1640.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
+    [Authorize(Roles =SD.Role_QA_MANAGER)]
     public class TopicsController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -21,7 +24,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         }
 
         // GET: TopicsController
-        public ActionResult List()
+        public IActionResult List()
         {
             var data = _db.Topics.ToList();
             if (data == null)
@@ -32,11 +35,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             return View(data);
         }
 
-        // GET: TopicsController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
         // GET: TopicsController/Create
         public IActionResult Create()
@@ -49,58 +47,54 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Topic topic)
         {
-            if (ModelState.IsValid)
-            { 
-                DateTime currentDate = DateTime.Now;
-                DateTime clousureDate = topic.ClosureDate;
-                DateTime finalClosureDate = topic.FinalClosureDate;
-                var name = topic.Name;
-                if (name != null)
-                {
-                    var count = _db.Topics.Where(c => c.Name.Contains(name)).Count();
-                    int result = DateTime.Compare(currentDate, clousureDate);
-                    int finalResult = DateTime.Compare(clousureDate, finalClosureDate);
-                    if (count > 0)
-                    {
-                        ViewBag.message = "Name Topic already exists";
-                        return View();
-
-                    }
-                    else if(result > 0)
-                    {
-                        ViewBag.message = "Date is not valid";
-                        return View();
-					}
-                    else if(finalResult > 0)
-                    {
-                        ViewBag.message = "Final Clousure Date must be bigger than Closeure Date";
-                        return View();
-                    }    
-                    _db.Add(topic);
-                    _db.SaveChanges();
-                    ViewBag.Message = "Add Topic successfully";
-                    return RedirectToAction(nameof(List));
-                }
+            if (!ModelState.IsValid)
+            {
+                ViewBag.message = "Error: Insert failed!";
+                return View(topic);
             }
-            ViewBag.message = "Insert failed!";
-            return View(topic);
+            DateTime currentDate = DateTime.Now;
+            DateTime clousureDate = topic.ClosureDate;
+            DateTime finalClosureDate = topic.FinalClosureDate;
+            if (topic.Name == null)
+            {
+                ViewBag.message = "Error: Insert failed!";
+                return View(topic);
+            }
+            int result = DateTime.Compare(currentDate, clousureDate);
+            int finalResult = DateTime.Compare(clousureDate, finalClosureDate);
+            var isTopicNameExisted = await _db.Topics
+                .AnyAsync(c => c.Name.ToLower().Trim() == topic.Name.ToLower().Trim());
+            if (isTopicNameExisted)
+            {
+                ViewBag.message = "Error: Name Category already exists";
+                return View();
+
+            }
+            if (result > 0)
+            {
+                ViewBag.message = "Error: Date is not valid";
+                return View();
+            }
+            if (finalResult > 0)
+            {
+                ViewBag.message = "Error: Final Clousure Date must be bigger than Closeure Date";
+                return View();
+            }
+
+            _db.Add(topic);
+            await _db.SaveChangesAsync();
+
+            ViewBag.Message = "Add Topic successfully";
+            return RedirectToAction(nameof(List));
+
         }
 
         [HttpGet]
         // GET: Topic/Edit/5
         public async Task<ActionResult> Update(int id)
         {
-            if (id < 0)
-            {
-                ViewBag.meesage = "Id Topic not found";
-                return RedirectToAction(nameof(List));
-
-            }
-            else
-            {
-                var data = _db.Topics.Where(c => c.Id == id).SingleOrDefault();
+                var data = await _db.Topics.Where(c => c.Id == id).SingleOrDefaultAsync();
                 return View(data);
-            }
         }
 
         // POST: TopicsController/Edit/5
@@ -108,21 +102,14 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, Topic topic)
         {
-            if (id < 0)
-            {
-                return NotFound();
-            }
-            else
-            {
-                var data = _db.Topics.FirstOrDefault(c => c.Id == id);
+                var data = await _db.Topics.FirstOrDefaultAsync(c => c.Id == id);
                 if (data != null)
                 {
                     data.Name = topic.Name;
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                     return RedirectToAction(nameof(List));
                 }
                 return View();
-            }
         }
 
         // GET: TopicsController/Delete/5
@@ -134,12 +121,12 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: TopicsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>  DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
-			var topic = await _db.Topics.FindAsync(id);
-			_db.Topics.Remove(topic);
-			await _db.SaveChangesAsync();
-			return RedirectToAction(nameof(List));
-		}
+            var topic = await _db.Topics.FindAsync(id);
+            _db.Topics.Remove(topic);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(List));
+        }
     }
 }

@@ -1,0 +1,11 @@
+﻿@model React
+
+@ViewBag.Like
+<form asp-action="Like" asp-controller="Ideas" method="post">
+    <button type="submit" class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1">
+        <input asp-for="IdealID" hidden />
+        <i class="fas fa-thumbs-up me-3"></i>
+        &nbsp;
+        <p class="m-0" style="@ViewBag.Like">Like</p>
+    </button>
+</form>

@@ -1,8 +1,8 @@
-﻿@model Comp1640.Models.Topic
+﻿@model Comp1640.Models.Category
 @{
-    ViewBag.Title = "Create Topic";
+    ViewBag.Title = "Create Category";
 }
-<h4>Topic</h4>
+<h4>Category</h4>
 <partial name="_StatusMessenger" model="@ViewData["message"]" />
 <hr />
 <div class="row">
@@ -15,16 +15,6 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ClosureDate" class="control-label"></label>
-                <input asp-for="ClosureDate" class="form-control" />
-                <span asp-validation-for="ClosureDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FinalClosureDate" class="control-label"></label>
-                <input asp-for="FinalClosureDate" class="form-control" />
-                <span asp-validation-for="FinalClosureDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -33,6 +23,7 @@
 
 <div>
     <a asp-action="List">Back to List</a>
+
 </div>
 
 @section Scripts {

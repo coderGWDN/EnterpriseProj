@@ -1,27 +1,17 @@
-﻿@model Comp1640.Models.Topic
+﻿@model Comp1640.Models.Category
 
-<h4>Topic</h4>
+<h4>Category</h4>
 <partial name="_StatusMessenger" model="@ViewData["message"]" />
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Update">
+        <form asp-action="Update" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ClosureDate" class="control-label"></label>
-                <input asp-for="ClosureDate" class="form-control" />
-                <span asp-validation-for="ClosureDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FinalClosureDate" class="control-label"></label>
-                <input asp-for="FinalClosureDate" class="form-control" />
-                <span asp-validation-for="FinalClosureDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -31,7 +21,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="List">Back to List</a>
 </div>
 
 @section Scripts {

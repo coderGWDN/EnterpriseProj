@@ -1,0 +1,29 @@
+﻿@using Comp1640.ViewModels
+@using Comp1640.Utility;
+@model CommentViewModel
+
+<!-- create comment -->
+<form class="d-flex my-1" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="CreateComment" method="post">
+    <h1></h1>
+    <!-- avatar -->
+    <div>
+        <img src="https://source.unsplash.com/collection/happy-people"
+             alt="avatar"
+             class="rounded-circle me-2"
+             style="
+                                  width: 38px;
+                                  height: 38px;
+                                  object-fit: cover;
+                                " />
+    </div>
+    &nbsp;
+    &nbsp;
+    <!-- input -->
+    <input asp-for="IdealID" hidden/>
+    <input type="text"
+           class="form-control border-0 rounded-pill bg-gray"
+           placeholder="Write a comment" asp-for="Content" />
+    <input type="submit" value="Create" class="btn btn-primary" />
+</form>
+
+<!-- end -->
