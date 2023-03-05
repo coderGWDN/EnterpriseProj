@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -223,6 +224,45 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             _db.Add(comment);
             await _db.SaveChangesAsync();   
             return RedirectToAction(nameof(PageSubmit));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadFile(int id)
+        {
+            var idea = _db.Ideas.Find(id);
+            var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            
+            var fileFolderPath = Path.Combine(wwwRootPath, "file");
+            var filePath = Path.Combine(fileFolderPath, idea.FilePath.Replace("/file/",""));
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            // Create a memory stream to write the zip file to
+            var memoryStream = new MemoryStream();
+
+            // Create a new zip archive in the memory stream
+            using (var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                // Create a new zip entry for the file
+                var zipEntry = zipArchive.CreateEntry(Path.GetFileName(filePath));
+
+                // Open the file and copy its contents to the zip entry stream
+                using (var zipEntryStream = zipEntry.Open())
+                {
+                    using (var fileStream = new FileStream(filePath, FileMode.Open))
+                    {
+                        fileStream.CopyTo(zipEntryStream);
+                    }
+                }
+            }
+
+            // Set the position of the memory stream to the beginning
+            memoryStream.Position = 0;
+
+            // Return the memory stream as a FileResult with the MIME type set to application/zip
+            return File(memoryStream, "application/zip", Path.GetFileNameWithoutExtension(filePath) + ".zip");
         }
     }
 }
