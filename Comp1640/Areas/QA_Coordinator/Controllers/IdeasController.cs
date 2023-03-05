@@ -1,10 +1,12 @@
 ﻿using Comp1640.Data;
+using Comp1640.EmailService;
 using Comp1640.Models;
 using Comp1640.Utility;
 using Comp1640.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -25,11 +27,13 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly ISendMailService _emailSender;
 
-        public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+        public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager, ISendMailService emailSender)
         {
             _db = db;
             _userManager = userManager;
+            _emailSender = emailSender;
         }
         // GET: IdealsController
         public async Task<IActionResult> List()
@@ -112,6 +116,16 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 ViewBag.message = "Error: Content is not null";
                 return RedirectToAction(nameof(Create));
             }
+
+            //
+            
+            MailContent content = new MailContent
+            {
+                To = "minhdacamst@gmail.com",
+                Subject = "New Idea",
+                Body = "Have a new idea"
+            };
+            await _emailSender.SendMail(content);
 
             _db.Ideas.Add(idea);
             await _db.SaveChangesAsync();
