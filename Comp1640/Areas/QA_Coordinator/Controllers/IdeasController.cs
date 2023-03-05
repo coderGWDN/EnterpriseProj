@@ -204,7 +204,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         }
         private void PopulateTopicsDropDownList(object selectedTopic = null)
         {
-            var topicsQuery = from t in _db.Topics
+            var topicsQuery = from t in _db.Topics where DateTime.Compare(t.ClosureDate, DateTime.Now) > 0
                               orderby t.Name
                               select t;
             ViewBag.TopicID = new SelectList(topicsQuery.AsNoTracking(), "Id", "Name", selectedTopic);
