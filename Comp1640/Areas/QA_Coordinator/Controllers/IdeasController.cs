@@ -112,7 +112,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 ViewBag.message = "Error: Content is not null";
                 return RedirectToAction(nameof(Create));
             }
-
+            
             _db.Ideas.Add(idea);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(List));
