@@ -45,7 +45,7 @@
                  class="rounded-circle me-2"
                  style="width: 48px; height: 48px; object-fit: cover" />
                 <div>
-                    <p class="m-0 fw-bold">&nbsp;User @i</p>
+                    <p class="m-0 fw-bold">&nbsp;User</p>
                     <span class="text-muted fs-7">&nbsp;@Model[i].Idea.CreatedDate</span>
                 </div>
             </div>
@@ -87,7 +87,8 @@
                 @if (Model[i].Idea.FilePath != null)
                 {
                     <embed src="@Model[i].Idea.FilePath" alt="post image"
-                   class="img-fluid rounded" style="width: 65%;height:600px;
+                   class="img-thumbnail rounded" style="
+    width: 500px;
     position: relative;
     left: 50%;
     transform: translateX(-50%);" />
@@ -96,28 +97,28 @@
             <!-- likes & comments -->
             <div class="post__comment mt-3 position-relative">
                 <!-- likes -->
-                <div class="d-flex align-items-center top-0 start-0 position-absolute"
+                <div class=" align-items-center top-0 start-0 position-absolute"
                  style="height: 50px; z-index: 5">
                     <div class="me-2">
                         <i class="text-primary fas fa-thumbs-up"></i>
                         <i class="text-danger fab fa-gratipay"></i>
                         <i class="text-warning fas fa-grin-squint"></i>
                     </div>
-                    <p class="m-0 text-muted fs-7">Phu, Tuan, and 3 others</p>
+                    <!--  <p class="m-0 text-muted fs-7">Phu, Tuan, and 3 others</p> -->
                 </div>
                 <!-- comments start-->
                 <div class="accordion" id="accordionExample">
                     <div class="accordion-item border-0">
                         <!-- comment collapse -->
-                        <h2 class="accordion-header" id="headingTwo">
-                            <div class="accordion-button collapsed pointer d-flex justify-content-end"
+                        <span class="accordion-header" id="headingTwo">
+                            <div class=" d-flex accordion-button collapsed pointer justify-content-end"
                              data-bs-toggle="collapse"
                              data-bs-target="#collapsePost1"
                              aria-expanded="false"
                              aria-controls="collapsePost1">
                                 <p class="m-0">2 Comments</p>
                             </div>
-                        </h2>
+                        </span>
                         <hr />
                         <!-- comment & like bar -->
                         <div class="d-flex justify-content-around">
