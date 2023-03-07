@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Comp1640.Utility
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -21,13 +22,33 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                    <li class="nav-item">
+                    @if(User.IsInRole(SD.Role_ADMIN)){
+                          <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
                     </li>
-                </ul>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Departments" asp-action="List">Departments</a>
+                            </li>
+                    }
+                    @if (User.IsInRole(SD.Role_QA_MANAGER))
+                    { 
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Categories" asp-action="List">Categories</a>
+                    </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Topics" asp-action="List">Topics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="PageSubmit">List Ideas</a>
+                            </li>
+                            
+                    }
+                    @if(User.IsInRole(SD.Role_QA_COORDINATOR)){
+                        <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="List">List Ideas</a>
+                    </li>
+                    }
+                    </ul>
                 <partial name="_LoginPartial"/>
             </div>
         </div>
@@ -39,11 +60,11 @@
     </main>
 </div>
 
-<footer class="border-top footer text-muted">
+@*<footer class="border-top footer text-muted">
     <div class="container">
         &copy; 2023 - Comp1640 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>
-</footer>
+</footer>*@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
