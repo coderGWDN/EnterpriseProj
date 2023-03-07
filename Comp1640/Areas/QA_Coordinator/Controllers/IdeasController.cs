@@ -220,9 +220,23 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 UserID = GetUserId(),
                 IdealID = commentView.IdealID
             };
-            _db.Add(comment);
-            await _db.SaveChangesAsync();   
-            return RedirectToAction(nameof(PageSubmit));
+            bool UserCommented = _db.Comments.Any(c => c.UserID == comment.UserID && c.IdealID == comment.IdealID);
+
+            if (!UserCommented)
+            {
+               
+                _db.Add(comment);
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(PageSubmit));
+            }
+
+            else
+            {
+                ModelState.AddModelError("UserID", "You have already commented.");
+                return RedirectToAction(nameof(PageSubmit));
+            }
+
+
         }
     }
 }
