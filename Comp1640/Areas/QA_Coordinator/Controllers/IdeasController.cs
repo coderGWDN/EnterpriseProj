@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Formats.Asn1.AsnWriter;
@@ -20,7 +21,7 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles =SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR)]
+    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR)]
     public class IdeasController : BaseController
     {
         private readonly ApplicationDbContext _db;
@@ -62,7 +63,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 .Include(i => i.User)
                 .AsNoTracking();
             var ideaLists = new List<ListIdeaVM>();
-            foreach(var idea in ideas)
+            foreach (var idea in ideas)
             {
                 var ideaList = new ListIdeaVM()
                 {
@@ -71,8 +72,13 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     {
                         IdealID = idea.Id
                     },
-                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
-
+                    ListComment = await _db.Comments.Where(c => c.IdealID == idea.Id).ToListAsync(),
+                    View = new View()
+                    {
+                        IdealID = idea.Id
+                    },
+                    ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
+                    React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
 
                 };
                 PopulateCategoriesDropDownList(idea.CategoryID);
@@ -95,7 +101,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormFile file, Idea idea)
         {
-            if(file != null)
+            if (file != null)
             {
                 string fileName = idea.Id.ToString() + Path.GetFileName(file.FileName);
                 string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/file", fileName);
@@ -137,6 +143,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, Idea idea)
         {
+            PopulateCategoriesDropDownList();
+            PopulateTopicsDropDownList();
             if (id != idea.Id)
             {
                 return NotFound();
@@ -221,8 +229,69 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 IdealID = commentView.IdealID
             };
             _db.Add(comment);
-            await _db.SaveChangesAsync();   
+            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(PageSubmit));
         }
+
+        [HttpGet("QA_Coordinator/Ideas/viewIdea/{id}")]
+        public async Task<ActionResult> ViewIdea([FromRoute] int id)
+        {
+            var viewDb = _db.Views.FirstOrDefault(_ => _.IdealID == id && _.UserID == GetUserId());
+            if (viewDb == null)
+            {
+                var view = new View() 
+                {
+                    VisitDate = DateTime.Now,
+                    UserID = GetUserId(),
+                    IdealID = id,
+                    Count = 1
+                };
+
+                _db.Views.Add(view);
+                _db.SaveChanges();
+                return Ok();
+            }
+
+            viewDb.Count++;
+            _db.Views.Update(viewDb);
+            _db.SaveChanges();
+
+            return Ok();  
+        }
+
+
+        [HttpGet("QA_Coordinator/Ideas/likeIdea/{id}")]
+        public async Task<ActionResult> LikeIdea([FromRoute] int id)
+        {
+            var reactDb = await _db.Reacts.FirstOrDefaultAsync(_ => _.IdealID == id && _.UserID == GetUserId());
+            if (reactDb == null)
+            {
+                var react = new React()
+                {
+                    Like = true,
+                    UserID = GetUserId(),
+                    IdealID = id,
+                    Dislike = false,
+                };
+                _db.Reacts.Add(react);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            if (!reactDb.Like)
+            {
+                reactDb.Like = true;
+                _db.Reacts.Update(reactDb);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            else
+            {
+                reactDb.Like = false;
+                _db.Reacts.Update(reactDb);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }     
+        }
+
     }
 }
