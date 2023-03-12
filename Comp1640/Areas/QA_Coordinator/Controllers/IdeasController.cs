@@ -55,8 +55,10 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
             return View(await ideas.ToListAsync());
         }
-        public async Task<IActionResult> PageSubmit()
+        public async Task<IActionResult> PageSubmit(string sortOrder)
         {
+            ViewData["ViewSortParm"] = sortOrder == "View" ? "" : "View";
+            ViewData["LikeSortParm"] = sortOrder == "Like" ? "" : "Like";
             var ideas = _db.Ideas
                 .Include(i => i.Category)
                 .Include(i => i.Topic)
@@ -79,11 +81,25 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     },
                     ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
                     React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
+                    ListReact = await _db.Reacts.Where(r => r.IdealID== idea.Id && r.Like==true).ToListAsync(),
 
                 };
                 PopulateCategoriesDropDownList(idea.CategoryID);
                 PopulateTopicsDropDownList(idea.TopicID);
                 ideaLists.Add(ideaList);
+            }
+
+            switch (sortOrder)
+            {
+                case "View":
+                    ideaLists = ideaLists.OrderBy(i => i.View.Count).ToList();
+                    break;
+                case "Like":
+                    ideaLists = ideaLists.OrderByDescending(i => i.ListReact.Count).ToList();
+                    break;
+                default:
+                    ideaLists = ideaLists.OrderByDescending(i => i.Idea.CreatedDate).ToList();
+                    break;
             }
 
             return View(ideaLists);

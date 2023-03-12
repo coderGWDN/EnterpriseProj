@@ -28,7 +28,8 @@
     </div>
     <!-- create modal -->
     @await Html.PartialAsync("_CreateIdea", new Idea())
-
+    <a asp-action="PageSubmit" asp-route-sortOrder="@ViewData["ViewSortParm"]">Sort</a>
+    <a asp-action="PageSubmit" asp-route-sortOrder="@ViewData["LikeSortParm"]">Sort Like</a>
     <hr />
 </div>
 
