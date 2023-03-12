@@ -21,10 +21,9 @@
         </div>
         <input type="text"
                class="form-control rounded-pill border-0 bg-gray pointer"
-               disabled
                placeholder="What's on your mind, John?"
-               data-bs-toggle="modal"
-               data-bs-target="#createModal" style="height: 44px;" />
+               style="height: 44px;" data-bs-toggle="modal"
+               data-bs-target="#createModalIdea" />
     </div>
     <!-- create modal -->
     @await Html.PartialAsync("_CreateIdea", new Idea())
