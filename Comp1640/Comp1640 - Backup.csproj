@@ -5,14 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Areas\QA_Manager\Controllers\**" />
-      <Content Remove="Areas\QA_Manager\Controllers\**" />
-      <EmbeddedResource Remove="Areas\QA_Manager\Controllers\**" />
-      <None Remove="Areas\QA_Manager\Controllers\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="MailKit" Version="3.6.0" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.4" />
@@ -37,6 +29,20 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\file\" />
+      <Folder Include="Areas\QA_Manager\Controllers\" />
+      <Folder Include="Controllers\" />
+      <Folder Include="Data\" />
+      <Folder Include="Models\" />
+      <Folder Include="Views\Shared\" />
+      <Folder Include="wwwroot\css\" />
+      <Folder Include="wwwroot\images\" />
+      <Folder Include="wwwroot\js\" />
+      <Folder Include="wwwroot\lib\bootstrap\" />
+      <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
+      <Folder Include="wwwroot\lib\jquery-validation-unobtrusive\" />
+      <Folder Include="wwwroot\lib\jquery-validation\" />
+      <Folder Include="wwwroot\lib\jquery-validation\dist\" />
+      <Folder Include="wwwroot\lib\jquery\" />
+      <Folder Include="wwwroot\lib\jquery\dist\" />
     </ItemGroup> 
 </Project>

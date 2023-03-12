@@ -11,8 +11,10 @@ namespace Comp1640.Models
         public int Id { get; set; }
         public DateTime VisitDate { get; set; }
         [Required]
-        private string UserID { get; set; }
+        public string UserID { get; set; }
         [Required]
         public int IdealID { get; set; }
+        [Required]
+        public int Count { get; set; }
     }
 }
