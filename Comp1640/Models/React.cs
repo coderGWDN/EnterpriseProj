@@ -7,8 +7,8 @@ namespace Comp1640.Models
     {
         [Key]
         public int Id { get; set; }
-        public int Dislike { get; set; }
-        public int Like { get; set; }
+        public bool Dislike { get; set; }
+        public bool Like { get; set; }
         [Required]
         public string UserID { get; set; }
         [Required]

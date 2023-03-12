@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -56,15 +57,17 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
             return View(await ideas.ToListAsync());
         }
-        public async Task<IActionResult> PageSubmit()
+        public async Task<IActionResult> PageSubmit(string sortOrder)
         {
+            ViewData["ViewSortParm"] = sortOrder == "View" ? "" : "View";
+            ViewData["LikeSortParm"] = sortOrder == "Like" ? "" : "Like";
             var ideas = _db.Ideas
                 .Include(i => i.Category)
                 .Include(i => i.Topic)
                 .Include(i => i.User)
                 .AsNoTracking();
             var ideaLists = new List<ListIdeaVM>();
-            foreach(var idea in ideas)
+            foreach (var idea in ideas)
             {
                 var ideaList = new ListIdeaVM()
                 {
@@ -73,13 +76,32 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     {
                         IdealID = idea.Id
                     },
-                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
-
+                    ListComment = await _db.Comments.Where(c => c.IdealID == idea.Id).ToListAsync(),
+                    View = new View()
+                    {
+                        IdealID = idea.Id
+                    },
+                    ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
+                    React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
+                    ListReact = await _db.Reacts.Where(r => r.IdealID== idea.Id && r.Like==true).ToListAsync(),
 
                 };
                 PopulateCategoriesDropDownList(idea.CategoryID);
                 PopulateTopicsDropDownList(idea.TopicID);
                 ideaLists.Add(ideaList);
+            }
+
+            switch (sortOrder)
+            {
+                case "View":
+                    ideaLists = ideaLists.OrderBy(i => i.View.Count).ToList();
+                    break;
+                case "Like":
+                    ideaLists = ideaLists.OrderByDescending(i => i.ListReact.Count).ToList();
+                    break;
+                default:
+                    ideaLists = ideaLists.OrderByDescending(i => i.Idea.CreatedDate).ToList();
+                    break;
             }
 
             return View(ideaLists);
@@ -97,7 +119,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormFile file, Idea idea)
         {
-            if(file != null)
+            if (file != null)
             {
                 string fileName = idea.Id.ToString() + Path.GetFileName(file.FileName);
                 string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/file", fileName);
@@ -139,6 +161,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, Idea idea)
         {
+            PopulateCategoriesDropDownList();
+            PopulateTopicsDropDownList();
             if (id != idea.Id)
             {
                 return NotFound();
@@ -223,9 +247,70 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 IdealID = commentView.IdealID
             };
             _db.Add(comment);
-            await _db.SaveChangesAsync();   
+            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(PageSubmit));
         }
+
+        [HttpGet("QA_Coordinator/Ideas/viewIdea/{id}")]
+        public async Task<ActionResult> ViewIdea([FromRoute] int id)
+        {
+            var viewDb = _db.Views.FirstOrDefault(_ => _.IdealID == id && _.UserID == GetUserId());
+            if (viewDb == null)
+            {
+                var view = new View() 
+                {
+                    VisitDate = DateTime.Now,
+                    UserID = GetUserId(),
+                    IdealID = id,
+                    Count = 1
+                };
+
+                _db.Views.Add(view);
+                _db.SaveChanges();
+                return Ok();
+            }
+
+            viewDb.Count++;
+            _db.Views.Update(viewDb);
+            _db.SaveChanges();
+
+            return Ok();  
+        }
+
+
+        [HttpGet("QA_Coordinator/Ideas/likeIdea/{id}")]
+        public async Task<ActionResult> LikeIdea([FromRoute] int id)
+        {
+            var reactDb = await _db.Reacts.FirstOrDefaultAsync(_ => _.IdealID == id && _.UserID == GetUserId());
+            if (reactDb == null)
+            {
+                var react = new React()
+                {
+                    Like = true,
+                    UserID = GetUserId(),
+                    IdealID = id,
+                    Dislike = false,
+                };
+                _db.Reacts.Add(react);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            if (!reactDb.Like)
+            {
+                reactDb.Like = true;
+                _db.Reacts.Update(reactDb);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            else
+            {
+                reactDb.Like = false;
+                _db.Reacts.Update(reactDb);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }     
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> DownloadFile(int id)
