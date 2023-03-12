@@ -1,10 +1,12 @@
 ﻿using Comp1640.Data;
+using Comp1640.EmailService;
 using Comp1640.Models;
 using Comp1640.Utility;
 using Comp1640.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -23,16 +25,20 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles =SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR + "," + SD.Role_STAFF)]
+    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR)]
     public class IdeasController : BaseController
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ISendMailService _emailSender;
 
-        public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+        public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager, ISendMailService emailSender)
         {
             _db = db;
             _userManager = userManager;
+            _emailSender = emailSender;
+            
         }
         // GET: IdealsController
         public async Task<IActionResult> List()
@@ -76,14 +82,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     {
                         IdealID = idea.Id
                     },
-                    ListComment = await _db.Comments.Where(c => c.IdealID == idea.Id).ToListAsync(),
-                    View = new View()
-                    {
-                        IdealID = idea.Id
-                    },
-                    ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
-                    React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
-                    ListReact = await _db.Reacts.Where(r => r.IdealID== idea.Id && r.Like==true).ToListAsync(),
+                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
 
                 };
                 PopulateCategoriesDropDownList(idea.CategoryID);
@@ -137,10 +136,41 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 return RedirectToAction(nameof(Create));
             }
 
+
             _db.Ideas.Add(idea);
             await _db.SaveChangesAsync();
+            await SendNotificationtoQA();
             return RedirectToAction(nameof(List));
 
+        }
+
+        [NonAction]
+        private async Task SendNotificationtoQA()
+        {
+            var getDepartmentByUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == GetUserId());
+           
+            var userList = await _db.ApplicationUsers
+                .Where(u => u.DepartmentId == getDepartmentByUser.DepartmentId)
+                .ToListAsync();
+
+            foreach (var user in userList)
+            { 
+                var roleTemp = await _userManager.GetRolesAsync(user);
+                user.Role = roleTemp.FirstOrDefault();
+            }
+
+            var getQA = userList.FirstOrDefault(u => u.Role == SD.Role_QA_COORDINATOR);
+
+            if (getQA == null)
+                return;
+
+            MailContent content = new MailContent
+            {
+                To = getQA.Email,
+                Subject = "New Idea",
+                Body = "Have a new idea"
+            };
+            await _emailSender.SendMail(content);
         }
 
         // GET: IdealsController/Edit/5
