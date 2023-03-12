@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Formats.Asn1.AsnWriter;
@@ -22,11 +23,12 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles =SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR)]
+    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR)]
     public class IdeasController : BaseController
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ISendMailService _emailSender;
 
         public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager, ISendMailService emailSender)
@@ -34,6 +36,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             _db = db;
             _userManager = userManager;
             _emailSender = emailSender;
+            
         }
         // GET: IdealsController
         public async Task<IActionResult> List()
@@ -66,7 +69,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 .Include(i => i.User)
                 .AsNoTracking();
             var ideaLists = new List<ListIdeaVM>();
-            foreach(var idea in ideas)
+            foreach (var idea in ideas)
             {
                 var ideaList = new ListIdeaVM()
                 {
@@ -75,7 +78,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     {
                         IdealID = idea.Id
                     },
-                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
+                    ListComment = await _db.Comments.Where(c => c.IdealID == idea.Id).ToListAsync(),
 
 
                 };
@@ -99,7 +102,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormFile file, Idea idea)
         {
-            if(file != null)
+            if (file != null)
             {
                 string fileName = idea.Id.ToString() + Path.GetFileName(file.FileName);
                 string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/file", fileName);
@@ -118,19 +121,50 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             }
 
             //
+
+            //MailContent content = new MailContent
+            //{
+            //    To = "minhdacamst@gmail.com",
+            //    Subject = "New Idea",
+            //    Body = "Have a new idea"
+            //};
+            //await _emailSender.SendMail(content);
+
+            _db.Ideas.Add(idea);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(SendNotificationtoQA));
+
+        }
+
+        public async Task<IActionResult> SendNotificationtoQA()
+        {
+            var getDepartmentByUser = _db.ApplicationUsers.Where(u => u.Id == GetUserId()).Select(u => u.DepartmentId).FirstOrDefault();
             
+            var usersInRole = await _userManager.GetUsersInRoleAsync("QA_COORDINATOR");
+            var userList = _db.ApplicationUsers
+                .Where(u => u.DepartmentId == getDepartmentByUser)
+                .ToList();
+
+
+            foreach (var user in userList)
+            {
+                //var userTemp = await _db.ApplicationUsers.Where(u => u.Id == user.Id && u.DepartmentId == getDepartmentByUser).FirstAsync();
+                var userTemp = await _userManager.FindByIdAsync(user.Id);
+                var roleTemp = await _userManager.GetRolesAsync(userTemp);
+                user.Role = roleTemp.First();
+            }
+
+            string getQA = userList.Where(u => u.Role == "QA_COORDINATOR").Select(u => u.Email).FirstOrDefault();
+
             MailContent content = new MailContent
             {
-                To = "minhdacamst@gmail.com",
+                To = getQA,
                 Subject = "New Idea",
                 Body = "Have a new idea"
             };
             await _emailSender.SendMail(content);
 
-            _db.Ideas.Add(idea);
-            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(List));
-
         }
 
         // GET: IdealsController/Edit/5
@@ -235,7 +269,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 IdealID = commentView.IdealID
             };
             _db.Add(comment);
-            await _db.SaveChangesAsync();   
+            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(PageSubmit));
         }
     }
