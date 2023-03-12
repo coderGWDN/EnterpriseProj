@@ -25,7 +25,7 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR)]
+    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR + "," + SD.Role_STAFF)]
     public class IdeasController : BaseController
     {
         private readonly ApplicationDbContext _db;
@@ -83,7 +83,13 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                         IdealID = idea.Id
                     },
                     ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
-
+                    View = new View()
+                    {
+                        IdealID = idea.Id
+                    },
+                    ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
+                    React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
+                    ListReact = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Like == true).ToListAsync(),  
                 };
                 PopulateCategoriesDropDownList(idea.CategoryID);
                 PopulateTopicsDropDownList(idea.TopicID);
