@@ -120,51 +120,41 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 return RedirectToAction(nameof(Create));
             }
 
-            //
-
-            //MailContent content = new MailContent
-            //{
-            //    To = "minhdacamst@gmail.com",
-            //    Subject = "New Idea",
-            //    Body = "Have a new idea"
-            //};
-            //await _emailSender.SendMail(content);
 
             _db.Ideas.Add(idea);
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(SendNotificationtoQA));
+            await SendNotificationtoQA();
+            return RedirectToAction(nameof(List));
 
         }
 
-        public async Task<IActionResult> SendNotificationtoQA()
+        [NonAction]
+        private async Task SendNotificationtoQA()
         {
-            //var getDepartmentByUser = _db.ApplicationUsers.Where(u => u.Id == GetUserId()).Select(u => u.DepartmentId).FirstOrDefault();
-            
-            //var usersInRole = await _userManager.GetUsersInRoleAsync("QA_COORDINATOR");
-            //var userList = _db.ApplicationUsers
-            //    .Where(u => u.DepartmentId == getDepartmentByUser)
-            //    .ToList();
+            var getDepartmentByUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == GetUserId());
+           
+            var userList = await _db.ApplicationUsers
+                .Where(u => u.DepartmentId == getDepartmentByUser.DepartmentId)
+                .ToListAsync();
 
+            foreach (var user in userList)
+            { 
+                var roleTemp = await _userManager.GetRolesAsync(user);
+                user.Role = roleTemp.FirstOrDefault();
+            }
 
-            //foreach (var user in userList)
-            //{
-            //    //var userTemp = await _db.ApplicationUsers.Where(u => u.Id == user.Id && u.DepartmentId == getDepartmentByUser).FirstAsync();
-            //    var userTemp = await _userManager.FindByIdAsync(user.Id);
-            //    var roleTemp = await _userManager.GetRolesAsync(userTemp);
-            //    user.Role = roleTemp.First();
-            //}
+            var getQA = userList.FirstOrDefault(u => u.Role == SD.Role_QA_COORDINATOR);
 
-            //string getQA = userList.Where(u => u.Role == "QA_COORDINATOR").Select(u => u.Email).FirstOrDefault();
+            if (getQA == null)
+                return;
 
-            //MailContent content = new MailContent
-            //{
-            //    To = getQA,
-            //    Subject = "New Idea",
-            //    Body = "Have a new idea"
-            //};
-            //await _emailSender.SendMail(content);
-
-            return RedirectToAction(nameof(List));
+            MailContent content = new MailContent
+            {
+                To = getQA.Email,
+                Subject = "New Idea",
+                Body = "Have a new idea"
+            };
+            await _emailSender.SendMail(content);
         }
 
         // GET: IdealsController/Edit/5
