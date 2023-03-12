@@ -15,6 +15,6 @@ namespace Comp1640.Models
         public string UserID { get; set; }
         [Required]
         public int IdealID { get; set; }
-
+     
     }
 }
