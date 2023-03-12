@@ -158,8 +158,34 @@
 
                                         <p class="m-0" id="like-@Model[i].Idea.Id" style="color:none;">Like</p>
                                     }
-                                }
+
+                                }                                                            
                                 
+                            </div>
+                            <div class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1" onclick=dislikeIdea(@Model[i].Idea.Id)>
+                                @if (Model[i].React == null)
+                                {
+
+                                    <i class="fas fa-thumbs-down me-3" id="dislikeI-@Model[i].Idea.Id" style="color:none;"></i>
+
+                                    <p class="m-0" id="dislike-@Model[i].Idea.Id" style="color:none;">Dislike</p>
+                                }
+                                else
+                                {
+                                    @if (Model[i].React.Dislike)
+                                    {
+                                        <i class="fas fa-thumbs-down me-3" id="dislikeI-@Model[i].Idea.Id" style="color:blue;"></i>
+
+                                        <p class="m-0" id="dislike-@Model[i].Idea.Id" style="color:blue;">Dislike</p>
+                                    }
+                                    @if (!Model[i].React.Dislike)
+                                    {
+                                        <i class="fas fa-thumbs-down me-3" id="dislikeI-@Model[i].Idea.Id" style="color:none;"></i>
+
+                                        <p class="m-0" id="dislike-@Model[i].Idea.Id" style="color:none;">Dislike</p>
+                                    }
+
+                                }
                             </div>
                             <!-- comment -->
                             <div class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1"
@@ -230,6 +256,20 @@
             recordReact(id)
         }
     }
+
+    function dislikeIdea(id) {
+        var dislikeI = document.getElementById("dislikeI" + "-" + id);
+        var dislike = document.getElementById("dislike" + "-" + id);
+        if (dislikeI.style.color == "blue") {
+            dislikeI.style.color = "none"
+            dislike.style.color = "none"
+            recordReactDislike(id);
+        } else {
+            dislikeI.style.color = "blue"
+            dislike.style.color = "blue"
+            recordReactDislike(id)
+        }
+    }
     function recordView(postId) {
         $.ajax({
             type: "GET",
@@ -241,6 +281,13 @@
         $.ajax({
             type: "GET",
             url: "/QA_Coordinator/Ideas/likeIdea/" + postId
+        });
+    }
+
+    function recordReactDislike(postId) {
+        $.ajax({
+            type: "GET",
+            url: "/QA_Coordinator/Ideas/DislikeIdea/" + postId
         });
     }
 </script>
@@ -295,32 +342,3 @@
     }
 
 </style>
-
-<script>
-    function showML(id) {
-        var showM = document.getElementById("showM" + "-" + id);
-        var showL = document.getElementById("showL" + "-" + id);
-        if (showM.style.display == "block") {
-            showL.style.display = "block";
-            showM.style.display = "none";
-        } else {
-            showL.style.display = "none";
-            showM.style.display = "block";
-        }
-
-    }
-
-    function recordView(postId) {
-        $.ajax({
-            type: "GET",
-            url: "/QA_Coordinator/Ideas/viewIdea/" + postId
-        });
-    }
-
-    function recordReact(postId) {
-        $.ajax({
-            type: "GET",
-            url: "/QA_Coordinator/Ideas/likeIdea/" + postId
-        });
-    }
-</script>

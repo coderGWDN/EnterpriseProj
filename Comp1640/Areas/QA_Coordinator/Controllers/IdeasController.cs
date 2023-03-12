@@ -61,6 +61,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         {
             ViewData["ViewSortParm"] = sortOrder == "View" ? "" : "View";
             ViewData["LikeSortParm"] = sortOrder == "Like" ? "" : "Like";
+            ViewData["LikeSortParm"] = sortOrder == "Dislike" ? "" : "Dislike";
             var ideas = _db.Ideas
                 .Include(i => i.Category)
                 .Include(i => i.Topic)
@@ -97,6 +98,9 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     ideaLists = ideaLists.OrderBy(i => i.View.Count).ToList();
                     break;
                 case "Like":
+                    ideaLists = ideaLists.OrderByDescending(i => i.ListReact.Count).ToList();
+                    break;
+                case "Dislike":
                     ideaLists = ideaLists.OrderByDescending(i => i.ListReact.Count).ToList();
                     break;
                 default:
@@ -239,15 +243,25 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateComment(CommentViewModel commentView)
         {
-            var comment = new Comment()
+            var userComment = _db.Comments.Where(c => c.IdealID == commentView.IdealID && c.UserID == GetUserId()).FirstOrDefault();
+            if (userComment != null)
             {
-                Content = commentView.Content,
-                DateTime = DateTime.Now,
-                UserID = GetUserId(),
-                IdealID = commentView.IdealID
-            };
-            _db.Add(comment);
-            await _db.SaveChangesAsync();
+                ViewBag.Message = "Error: User only one comment just one idea";
+            }
+            else
+            {
+                var comment = new Comment()
+                {
+                    Content = commentView.Content,
+                    DateTime = DateTime.Now,
+                    UserID = GetUserId(),
+                    IdealID = commentView.IdealID
+                };
+
+                _db.Add(comment);
+                await _db.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(PageSubmit));
         }
 
@@ -289,7 +303,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     Like = true,
                     UserID = GetUserId(),
                     IdealID = id,
-                    Dislike = false,
                 };
                 _db.Reacts.Add(react);
                 await _db.SaveChangesAsync();
@@ -309,6 +322,39 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 await _db.SaveChangesAsync();
                 return Ok();
             }     
+        }
+
+
+        [HttpGet("QA_Coordinator/Ideas/DislikeIdea/{id}")]
+        public async Task<ActionResult> DislikeIdea([FromRoute] int id)
+        {
+            var reactDb = await _db.Reacts.FirstOrDefaultAsync(_ => _.IdealID == id && _.UserID == GetUserId());
+            if (reactDb == null)
+            {
+                var react = new React()
+                {
+                    Dislike = true,
+                    UserID = GetUserId(),
+                    IdealID = id,
+                };
+                _db.Reacts.Add(react);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            if (!reactDb.Dislike)
+            {
+                reactDb.Dislike = true;
+                _db.Reacts.Update(reactDb);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            else
+            {
+                reactDb.Dislike = false;
+                _db.Reacts.Update(reactDb);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
         }
 
 
