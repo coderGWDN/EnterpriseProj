@@ -1,5 +1,4 @@
-﻿@using Comp1640.ViewModels
-@model List<Comp1640.ViewModels.ListIdeaVM>
+﻿@model List<Comp1640.ViewModels.ListIdeaVM>
 
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
@@ -40,9 +39,9 @@
             <!-- avatar -->
             <div class="d-flex">
                 <img src="https://source.unsplash.com/collection/happy-people"
-                 alt="avatar"
-                 class="rounded-circle me-2"
-                 style="width: 48px; height: 48px; object-fit: cover" />
+                     alt="avatar"
+                     class="rounded-circle me-2"
+                     style="width: 48px; height: 48px; object-fit: cover" />
                 <div>
                     <p class="m-0 fw-bold">&nbsp;@Model[i].Idea.User.FullName</p>
                     <span class="text-muted fs-7">&nbsp;@Model[i].Idea.CreatedDate</span>
@@ -54,34 +53,35 @@
                     <span class="text-muted fs-7">&nbsp;Topic: @Model[i].Idea.Topic.Name (@Model[i].Idea.Topic.ClosureDate - @Model[i].Idea.Topic.FinalClosureDate)</span>
                 </div>
             </div>
+                
             <!-- edit -->
             <i class="fas fa-ellipsis-h"
-           type="button"
-           id="post1Menu"
-           data-bs-toggle="dropdown"
-           aria-expanded="false"></i>
+               type="button"
+               id="post1Menu"
+               data-bs-toggle="dropdown"
+               aria-expanded="false"></i>
             <!-- edit menu -->
             <ul class="dropdown-menu border-0 shadow"
-            aria-labelledby="post1Menu">
+                aria-labelledby="post1Menu">
                 <li class="d-flex align-items-center">
                     <a class="dropdown-item d-flex justify-content-around align-items-center fs-7"
-                   data-toggle="modal"
-                   data-target="#updateModal-@Model[i].Idea.Id">
+                       data-toggle="modal"
+                       data-target="#updateModal-@Model[i].Idea.Id">
                         Edit Post
                     </a>
                 </li>
                 <li class="d-flex align-items-center">
                     <div class="dropdown-item d-flex justify-content-around align-items-center fs-7"
-                     data-toggle="modal"
-                     data-target="#DeleteModal-@Model[i].Idea.Id">
+                         data-toggle="modal"
+                         data-target="#DeleteModal-@Model[i].Idea.Id">
                         Delete Post
                     </div>
                 </li>
             </ul>
             @await Html.PartialAsync("_UpdateIdea", Model[i].Idea)
             @await Html.PartialAsync("_DeleteConfirm", Model[i].Idea)
-
         </div>
+    
         <!-- post content -->
         <div class="mt-3 accordion-collapse collapse" id="collapsePostDetail-@Model[i].Idea.Id" data-bs-parent="#accordionExampleDetail">
             <!-- content -->
@@ -93,14 +93,16 @@
                 @if (Model[i].Idea.FilePath != null)
                 {
                     <embed src="@Model[i].Idea.FilePath" alt="post image"
-                   class="img-fluid rounded" style="width: 65%;height:600px;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);" />
+                           class="img-fluid rounded" style="width: 65%;
+                                                            height:600px;
+                                                            position: relative;
+                                                            left: 50%;
+                                                            transform: translateX(-50%);" />
                 }
-                
+                    
                 <a class="btn btn-success mt-5" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="DownloadFile" asp-route-id="@Model[i].Idea.Id" target="_self">Download File</a>
             </div>
+        
             <!-- likes & comments -->
             <div class="post__comment mt-3 position-relative">
                 <!-- likes -->
@@ -158,9 +160,9 @@
                         </div>
                     </div>
                 </div>
-                <!-- end -->
             </div>
         </div>
+        
         <div class="show-more" data-bs-toggle="collapse"
          data-bs-target="#collapsePostDetail-@Model[i].Idea.Id"
          aria-expanded="false"
@@ -173,7 +175,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
         crossorigin="anonymous"></script>
+
 <script src="./js/main.js"></script>
+
 <style>
     .show-more {
         /*   width: 690px;  */
@@ -198,6 +202,7 @@
     }
 
 </style>
+
 <script>
     function showML(id) {
         var showM = document.getElementById("showM" + "-" + id);

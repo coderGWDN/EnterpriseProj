@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Formats.Asn1.AsnWriter;
@@ -263,6 +264,39 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
             // Return the memory stream as a FileResult with the MIME type set to application/zip
             return File(memoryStream, "application/zip", Path.GetFileNameWithoutExtension(filePath) + ".zip");
+        }
+        
+        [HttpPost]
+        public FileResult DownloadFileCsv()
+        {
+            List<object> ideas = (from idea in _db.Ideas.Take(10)
+                  select new[] {
+                    idea.Content.ToString(),
+                    idea.FilePath.ToString(),
+                    idea.CreatedDate.ToShortDateString(),
+                    idea.Category.Name.ToString(),
+                    idea.Topic.Name.ToString(),
+                    idea.User.FullName.ToString()
+                }).ToList<object>();
+ 
+            //Insert the Column Names.
+            ideas.Insert(0, new string[6] { "Content", "FilePath", "Created Date", "Category Name", "Topic Name", "User Name" });
+ 
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < ideas.Count; i++)
+            {
+                string[] idea = (string[])ideas[i];
+                for (int j = 0; j < idea.Length; j++)
+                {
+                    //Append data with separator.
+                    sb.Append(idea[j] + ',');
+                }
+ 
+                //Append new line character.
+                sb.Append("\r\n");
+            }
+ 
+            return File(Encoding.UTF8.GetBytes(sb.ToString()), "text/csv", "DownloadFileCsv.csv");
         }
     }
 }
