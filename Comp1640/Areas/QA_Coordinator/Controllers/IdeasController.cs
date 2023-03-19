@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -486,23 +487,38 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [HttpPost]
         public FileResult DownloadFileCsv()
         {
-            List<object> ideas = (from idea in _db.Ideas.Take(10)
-                  select new[] {
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+            var ideaLists = new List<string[]>();
+            foreach (var idea in ideas)
+            {
+                var ideaList = new string[] 
+                {
+                    idea.Id.ToString(),
+                    idea.FilePath,
                     idea.Content.ToString(),
-                    idea.FilePath.ToString(),
                     idea.CreatedDate.ToShortDateString(),
                     idea.Category.Name.ToString(),
                     idea.Topic.Name.ToString(),
-                    idea.User.FullName.ToString()
-                }).ToList<object>();
- 
+                    idea.User.FullName.ToString(),
+                    _db.Comments.Where(c => c.IdealID == idea.Id).Count().ToString(),
+                    _db.Reacts.Where(l => l.IdealID == idea.Id && l.Like == true).Count().ToString(),
+                    _db.Reacts.Where(d => d.IdealID == idea.Id && d.Dislike == true).Count().ToString(),
+                    _db.Views.Where(c => c.IdealID == idea.Id).FirstOrDefault().Count.ToString()
+                };
+                ideaLists.Add(ideaList);
+            }
+
             //Insert the Column Names.
-            ideas.Insert(0, new string[6] { "Content", "FilePath", "Created Date", "Category Name", "Topic Name", "User Name" });
+            ideaLists.Insert(0, new string[11] {"ID Idea", "FilePath", "Content", "Created Date", "Category Name", "Topic Name", "User Name", "Commnet", "Like", "Dislike", "View" });
  
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < ideas.Count; i++)
+            for (int i = 0; i < ideaLists.Count; i++)
             {
-                string[] idea = (string[])ideas[i];
+                string[] idea = ideaLists[i];
                 for (int j = 0; j < idea.Length; j++)
                 {
                     //Append data with separator.
