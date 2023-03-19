@@ -13,12 +13,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using static System.Formats.Asn1.AsnWriter;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
@@ -36,18 +32,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         }
         // GET: IdealsController
         public async Task<IActionResult> List()
-        {
-            var ideas = _db.Ideas
-                .Include(i => i.Category)
-                .Include(i => i.Topic)
-                .Include(i => i.User)
-                .AsNoTracking();
-
-            return View(await ideas.ToListAsync());
-        }
-
-        // GET: IdealsController/Details/5
-        public async Task<IActionResult> Index()
         {
             var ideas = _db.Ideas
                 .Include(i => i.Category)
@@ -86,8 +70,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     ListReact = await _db.Reacts.Where(r => r.IdealID== idea.Id && r.Like==true).ToListAsync(),
 
                 };
-                PopulateCategoriesDropDownList(idea.CategoryID);
-                PopulateTopicsDropDownList(idea.TopicID);
+                PopulateCategoriesDropDownList();
+                PopulateTopicsDropDownList();
                 ideaLists.Add(ideaList);
             }
 
