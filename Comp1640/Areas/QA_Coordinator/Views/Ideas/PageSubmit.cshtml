@@ -80,8 +80,7 @@
                                                             left: 50%;
                                                             transform: translateX(-50%);" />
                 }
-                    
-                <a class="btn btn-success mt-5" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="DownloadFile" asp-route-id="@Model[i].Idea.Id" target="_self">Download File</a>
+
             </div>
         
             <!-- likes & comments -->
@@ -117,9 +116,9 @@
                                 @if (Model[i].React == null)
                                 {
 
-                                    <i class="fas fa-thumbs-up me-3" id="likeI-@Model[i].Idea.Id" style="color:none;"></i>
+                                    <i class="fas fa-thumbs-up me-3" id="likeI-@Model[i].Idea.Id" style="color:gray;"></i>
 
-                                    <p class="m-0" id="like-@Model[i].Idea.Id" style="color:none;">Like</p>
+                                    <p class="m-0" id="like-@Model[i].Idea.Id" style="color:gray;">Like</p>
                                 }else{
                                     @if (Model[i].React.Like)
                                     {
@@ -129,9 +128,9 @@
                                     }
                                     @if (!Model[i].React.Like)
                                     {
-                                        <i class="fas fa-thumbs-up me-3" id="likeI-@Model[i].Idea.Id" style="color:none;"></i>
+                                        <i class="fas fa-thumbs-up me-3" id="likeI-@Model[i].Idea.Id" style="color:gray;"></i>
 
-                                        <p class="m-0" id="like-@Model[i].Idea.Id" style="color:none;">Like</p>
+                                        <p class="m-0" id="like-@Model[i].Idea.Id" style="color:gray;">Like</p>
                                     }
 
                                 }                                                            
@@ -141,9 +140,9 @@
                                 @if (Model[i].React == null)
                                 {
 
-                                    <i class="fas fa-thumbs-down me-3" id="dislikeI-@Model[i].Idea.Id" style="color:none;"></i>
+                                    <i class="fas fa-thumbs-down me-3" id="dislikeI-@Model[i].Idea.Id" style="color:gray;"></i>
 
-                                    <p class="m-0" id="dislike-@Model[i].Idea.Id" style="color:none;">Dislike</p>
+                                    <p class="m-0" id="dislike-@Model[i].Idea.Id" style="color:gray;">Dislike</p>
                                 }
                                 else
                                 {
@@ -155,9 +154,9 @@
                                     }
                                     @if (!Model[i].React.Dislike)
                                     {
-                                        <i class="fas fa-thumbs-down me-3" id="dislikeI-@Model[i].Idea.Id" style="color:none;"></i>
+                                        <i class="fas fa-thumbs-down me-3" id="dislikeI-@Model[i].Idea.Id" style="color:gray;"></i>
 
-                                        <p class="m-0" id="dislike-@Model[i].Idea.Id" style="color:none;">Dislike</p>
+                                        <p class="m-0" id="dislike-@Model[i].Idea.Id" style="color:gray;">Dislike</p>
                                     }
 
                                 }
@@ -175,8 +174,12 @@
                             @if (Model[i].Idea.FilePath != null)
                             {
                                 <div class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1">
-                                    <i class="fa-solid fa-download"></i>
-                                    <p class="m-0">Download</p>
+                                    <i class="fa-solid fa-download" style="color:blue"></i>
+                                    <a asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="DownloadFile" asp-route-id="@Model[i].Idea.Id" target="_self">
+                                      
+                                       Download
+                                    </a>
+                                  
                                 </div>
                             }
                         </div>
@@ -229,8 +232,8 @@
         var likeI = document.getElementById("likeI" + "-" + id);
         var like = document.getElementById("like" + "-" + id);
         if (likeI.style.color == "blue") {
-            likeI.style.color = "none"
-            like.style.color = "none"
+            likeI.style.color = "gray"
+            like.style.color = "gray"
             recordReact(id);
         } else {
             likeI.style.color = "blue"
@@ -243,8 +246,8 @@
         var dislikeI = document.getElementById("dislikeI" + "-" + id);
         var dislike = document.getElementById("dislike" + "-" + id);
         if (dislikeI.style.color == "blue") {
-            dislikeI.style.color = "none"
-            dislike.style.color = "none"
+            dislikeI.style.color = "gray"
+            dislike.style.color = "gray"
             recordReactDislike(id);
         } else {
             dislikeI.style.color = "blue"
