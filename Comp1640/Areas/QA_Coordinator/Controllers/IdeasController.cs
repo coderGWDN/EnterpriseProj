@@ -1,10 +1,12 @@
 ﻿using Comp1640.Data;
+using Comp1640.EmailService;
 using Comp1640.Models;
 using Comp1640.Utility;
 using Comp1640.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,16 +21,20 @@ using System.Threading.Tasks;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles =SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR + "," + SD.Role_STAFF)]
+    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR + "," + SD.Role_STAFF)]
     public class IdeasController : BaseController
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ISendMailService _emailSender;
 
-        public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+        public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager, ISendMailService emailSender)
         {
             _db = db;
             _userManager = userManager;
+            _emailSender = emailSender;
+            
         }
         // GET: IdealsController
         public async Task<IActionResult> List()
@@ -45,6 +51,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         {
             ViewData["ViewSortParm"] = sortOrder == "View" ? "" : "View";
             ViewData["LikeSortParm"] = sortOrder == "Like" ? "" : "Like";
+            ViewData["LikeSortParm"] = sortOrder == "Dislike" ? "" : "Dislike";
             var ideas = _db.Ideas
                 .Include(i => i.Category)
                 .Include(i => i.Topic)
@@ -60,15 +67,14 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     {
                         IdealID = idea.Id
                     },
-                    ListComment = await _db.Comments.Where(c => c.IdealID == idea.Id).ToListAsync(),
+                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
                     View = new View()
                     {
                         IdealID = idea.Id
                     },
                     ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
                     React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
-                    ListReact = await _db.Reacts.Where(r => r.IdealID== idea.Id && r.Like==true).ToListAsync(),
-
+                    ListReact = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Like == true).ToListAsync(),  
                 };
                 PopulateCategoriesDropDownList();
                 PopulateTopicsDropDownList();
@@ -81,6 +87,9 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     ideaLists = ideaLists.OrderBy(i => i.View.Count).ToList();
                     break;
                 case "Like":
+                    ideaLists = ideaLists.OrderByDescending(i => i.ListReact.Count).ToList();
+                    break;
+                case "Dislike":
                     ideaLists = ideaLists.OrderByDescending(i => i.ListReact.Count).ToList();
                     break;
                 default:
@@ -121,10 +130,41 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 return RedirectToAction(nameof(Create));
             }
 
+
             _db.Ideas.Add(idea);
             await _db.SaveChangesAsync();
+            await SendNotificationtoQA();
             return RedirectToAction(nameof(List));
 
+        }
+
+        [NonAction]
+        private async Task SendNotificationtoQA()
+        {
+            var getDepartmentByUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == GetUserId());
+           
+            var userList = await _db.ApplicationUsers
+                .Where(u => u.DepartmentId == getDepartmentByUser.DepartmentId)
+                .ToListAsync();
+
+            foreach (var user in userList)
+            { 
+                var roleTemp = await _userManager.GetRolesAsync(user);
+                user.Role = roleTemp.FirstOrDefault();
+            }
+
+            var getQA = userList.FirstOrDefault(u => u.Role == SD.Role_QA_COORDINATOR);
+
+            if (getQA == null)
+                return;
+
+            MailContent content = new MailContent
+            {
+                To = getQA.Email,
+                Subject = "New Idea",
+                Body = "Have a new idea"
+            };
+            await _emailSender.SendMail(content);
         }
 
         // GET: IdealsController/Edit/5
@@ -223,15 +263,25 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateComment(CommentViewModel commentView)
         {
-            var comment = new Comment()
+            var userComment = _db.Comments.Where(c => c.IdealID == commentView.IdealID && c.UserID == GetUserId()).FirstOrDefault();
+            if (userComment != null)
             {
-                Content = commentView.Content,
-                DateTime = DateTime.Now,
-                UserID = GetUserId(),
-                IdealID = commentView.IdealID
-            };
-            _db.Add(comment);
-            await _db.SaveChangesAsync();
+                ViewBag.Message = "Error: User only one comment just one idea";
+            }
+            else
+            {
+                var comment = new Comment()
+                {
+                    Content = commentView.Content,
+                    DateTime = DateTime.Now,
+                    UserID = GetUserId(),
+                    IdealID = commentView.IdealID
+                };
+
+                _db.Add(comment);
+                await _db.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(PageSubmit));
         }
 
@@ -273,7 +323,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     Like = true,
                     UserID = GetUserId(),
                     IdealID = id,
-                    Dislike = false,
                 };
                 _db.Reacts.Add(react);
                 await _db.SaveChangesAsync();
@@ -293,6 +342,39 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 await _db.SaveChangesAsync();
                 return Ok();
             }     
+        }
+
+
+        [HttpGet("QA_Coordinator/Ideas/DislikeIdea/{id}")]
+        public async Task<ActionResult> DislikeIdea([FromRoute] int id)
+        {
+            var reactDb = await _db.Reacts.FirstOrDefaultAsync(_ => _.IdealID == id && _.UserID == GetUserId());
+            if (reactDb == null)
+            {
+                var react = new React()
+                {
+                    Dislike = true,
+                    UserID = GetUserId(),
+                    IdealID = id,
+                };
+                _db.Reacts.Add(react);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            if (!reactDb.Dislike)
+            {
+                reactDb.Dislike = true;
+                _db.Reacts.Update(reactDb);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            else
+            {
+                reactDb.Dislike = false;
+                _db.Reacts.Update(reactDb);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
         }
 
 

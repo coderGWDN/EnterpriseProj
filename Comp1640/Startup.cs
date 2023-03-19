@@ -1,5 +1,6 @@
 using System;
 using Comp1640.Data;
+using Comp1640.EmailService;
 using Comp1640.Initializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,7 +48,12 @@ namespace Comp1640
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-            
+
+            services.AddOptions();                                         // Kích hoạt Options
+            var mailsettings = Configuration.GetSection("MailSettings");  // đọc config
+            services.Configure<MailSettings>(mailsettings);                // đăng ký để Inject
+            services.AddTransient<ISendMailService, SendMailService>();
+
             services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
         }
 
