@@ -17,6 +17,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
@@ -51,7 +52,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         {
             ViewData["ViewSortParm"] = sortOrder == "View" ? "" : "View";
             ViewData["LikeSortParm"] = sortOrder == "Like" ? "" : "Like";
-            ViewData["LikeSortParm"] = sortOrder == "Dislike" ? "" : "Dislike";
+            ViewData["DislikeSortParm"] = sortOrder == "Dislike" ? "" : "Dislike";
             var ideas = _db.Ideas
                 .Include(i => i.Category)
                 .Include(i => i.Topic)
@@ -74,7 +75,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     },
                     ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
                     React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
-                    ListReact = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Like == true).ToListAsync(),  
+                    ListReactLike = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Like == true).ToListAsync(),
+                    ListReactDislike = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Dislike == true).ToListAsync(),
                 };
                 PopulateCategoriesDropDownList();
                 PopulateTopicsDropDownList();
@@ -87,10 +89,10 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     ideaLists = ideaLists.OrderBy(i => i.View.Count).ToList();
                     break;
                 case "Like":
-                    ideaLists = ideaLists.OrderByDescending(i => i.ListReact.Count).ToList();
+                    ideaLists = ideaLists.OrderByDescending(i => i.ListReactLike.Count).ToList();
                     break;
                 case "Dislike":
-                    ideaLists = ideaLists.OrderByDescending(i => i.ListReact.Count).ToList();
+                    ideaLists = ideaLists.OrderByDescending(i => i.ListReactDislike.Count).ToList();
                     break;
                 default:
                     ideaLists = ideaLists.OrderByDescending(i => i.Idea.CreatedDate).ToList();
@@ -107,6 +109,60 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             return View();
         }
 
+
+        public async Task<IActionResult> MyIdeas(string sortOrder)
+        {
+            ViewData["ViewSortParm"] = sortOrder == "View" ? "" : "View";
+            ViewData["LikeSortParm"] = sortOrder == "Like" ? "" : "Like";
+            ViewData["DislikeSortParm"] = sortOrder == "Dislike" ? "" : "Dislike";
+            var ideas = _db.Ideas
+                .Include(i => i.Category)
+                .Include(i => i.Topic)
+                .Include(i => i.User)
+                .AsNoTracking();
+            var ideaLists = new List<ListIdeaVM>();
+            foreach (var idea in ideas)
+            {
+                var ideaList = new ListIdeaVM()
+                {
+                    Idea = idea,
+                    Comment = new CommentViewModel()
+                    {
+                        IdealID = idea.Id
+                    },
+                    ListComment = await _db.Comments.Where(c => c.IdealID == idea.Id).ToListAsync(),
+                    View = new View()
+                    {
+                        IdealID = idea.Id
+                    },
+                    ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
+                    React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
+                    ListReactLike = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Like == true).ToListAsync(),
+                    ListReactDislike = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Dislike == true).ToListAsync(),
+                };
+                PopulateCategoriesDropDownList();
+                PopulateTopicsDropDownList();
+                ideaLists.Add(ideaList);
+            }
+
+            switch (sortOrder)
+            {
+                case "View":
+                    ideaLists = ideaLists.OrderBy(i => i.View.Count).ToList();
+                    break;
+                case "Like":
+                    ideaLists = ideaLists.OrderByDescending(i => i.ListReactLike.Count).ToList();
+                    break;
+                case "Dislike":
+                    ideaLists = ideaLists.OrderByDescending(i => i.ListReactDislike.Count).ToList();
+                    break;
+                default:
+                    ideaLists = ideaLists.OrderByDescending(i => i.Idea.CreatedDate).ToList();
+                    break;
+            }
+            ideaLists = ideaLists.Where(i => i.Idea.UserID == GetUserId()).ToList();
+            return View(ideaLists);
+        }
         // POST: IdealsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -134,7 +190,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             _db.Ideas.Add(idea);
             await _db.SaveChangesAsync();
             await SendNotificationtoQA();
-            return RedirectToAction(nameof(List));
+            return RedirectToAction(nameof(PageSubmit));
 
         }
 
@@ -183,13 +239,23 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         // POST: IdealsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, Idea idea)
+        public async Task<IActionResult> Update(int id, IFormFile file, Idea idea)
         {
             PopulateCategoriesDropDownList();
             PopulateTopicsDropDownList();
             if (id != idea.Id)
             {
                 return NotFound();
+            }
+            if (file != null)
+            {
+                string fileName = idea.Id.ToString() + Path.GetFileName(file.FileName);
+                string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/file", fileName);
+                using (var stream = new FileStream(savePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                idea.FilePath = "/file/" + fileName;
             }
             if (idea != null)
             {

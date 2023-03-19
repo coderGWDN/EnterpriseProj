@@ -2,10 +2,7 @@
 
 <div>
     <a asp-action="Create">Create New</a>
-    
-    <form method="post" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="DownloadFileCsv" >
-        <input type="submit" id="btnSubmit" value="Export" />
-    </form>
+   
 </div>
 
 <partial name="_StatusMessenger" model="@ViewData["message"]" />

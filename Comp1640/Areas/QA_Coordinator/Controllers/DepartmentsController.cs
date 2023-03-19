@@ -51,7 +51,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 return View(department);
             }
             var name = department.Name;
-            var isDepartmentNameExisted = await _db.Categories.AnyAsync(c => c.Name.ToLower().Trim() == department.Name.ToLower().Trim());
+            var isDepartmentNameExisted = await _db.Departments.AnyAsync(c => c.Name.ToLower().Trim() == department.Name.ToLower().Trim());
             if (isDepartmentNameExisted)
             {
                 ViewBag.message = "Error: Name Department already exists";
