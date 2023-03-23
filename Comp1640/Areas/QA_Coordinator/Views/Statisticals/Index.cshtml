@@ -1,0 +1,42 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+<div>
+    <canvas id="myChart"></canvas>
+</div>  
+
+<div>
+    <canvas id="statisticalCategoryWithIdeas"></canvas>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var data = @Html.Raw(Json.Serialize(ViewBag.ChartData));
+    var options = @Html.Raw(Json.Serialize(ViewBag.ChartOptions));
+
+    var ctx = document.getElementById("myChart").getContext("2d");
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: options
+    });
+
+
+    var dataStatisticalCategoryWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalCategoryWithIdeas));
+    var optionsStatisticalCategoryWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalCategoryWithIdeas));
+
+    var ctxStatisticalCategoryWithIdeas = document.getElementById("statisticalCategoryWithIdeas");
+    var StatisticalCategoryWithIdeas = new Chart(ctxStatisticalCategoryWithIdeas, {
+        type: 'pie',
+        data: dataStatisticalCategoryWithIdeas,
+        options: optionsStatisticalCategoryWithIdeas,
+    });
+
+
+</script>
+

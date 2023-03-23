@@ -91,8 +91,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
                     ListReact = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Like == true).ToListAsync(),  
                 };
-                PopulateCategoriesDropDownList(idea.CategoryID);
-                PopulateTopicsDropDownList(idea.TopicID);
+                PopulateCategoriesDropDownList();
+                PopulateTopicsDropDownList();
                 ideaLists.Add(ideaList);
             }
 
@@ -223,8 +223,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
                 return RedirectToAction(nameof(List));
             }
-            PopulateCategoriesDropDownList(idea.CategoryID);
-            PopulateTopicsDropDownList(idea.TopicID);
+            PopulateCategoriesDropDownList();
+            PopulateTopicsDropDownList();
             return View(idea);
         }
 
