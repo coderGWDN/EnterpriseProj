@@ -5,27 +5,19 @@
 }
 
 
+<div>
+    <canvas id="myChart"></canvas>
+</div>  
 
 <div>
-    <canvas id="statisticalCategoryWithIdeas"></canvas>
+    <canvas id="statisticalTopicWithIdeas"></canvas>
 </div>
 <div>
-    <canvas id="statisticalTopicWithIdeas"></canvas>
+    <canvas id="statisticalDepartmentWithIdeas"></canvas>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var data = @Html.Raw(Json.Serialize(ViewBag.ChartData));
-    var options = @Html.Raw(Json.Serialize(ViewBag.ChartOptions));
-
-    var ctx = document.getElementById("myChart").getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: data,
-        options: options
-    });
-
-
     var dataStatisticalCategoryWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalCategoryWithIdeas));
     var optionsStatisticalCategoryWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalCategoryWithIdeas));
 
@@ -36,16 +28,6 @@
         options: optionsStatisticalCategoryWithIdeas,
     });
 
-
-        var dataStatisticalTopicWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalTopicWithIdeas));
-    var optionsStatisticalTopicWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalTopicWithIdeas));
-
-    var ctxStatisticalTopicWithIdeas = document.getElementById("statisticalTopicWithIdeas");
-    var StatisticalTopicWithIdeas = new Chart(ctxStatisticalTopicWithIdeas, {
-        type: 'pie',
-        data: dataStatisticalTopicWithIdeas,
-        options: optionsStatisticalTopicWithIdeas,
-    });
 
 </script>
 
