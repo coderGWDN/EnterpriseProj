@@ -85,7 +85,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                         IdealID = idea.Id
                     },
                     ListComment = await _db.Comments.Where(c => c.IdealID == idea.Id).ToListAsync(),
-<<<<<<<<< Temporary merge branch 1
                     View = new View()
                     {
                         IdealID = idea.Id
@@ -93,9 +92,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
                     React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
                     ListReact = await _db.Reacts.Where(r => r.IdealID== idea.Id && r.Like==true).ToListAsync(),
-=========
-
->>>>>>>>> Temporary merge branch 2
 
                 };
                 PopulateCategoriesDropDownList(idea.CategoryID);
