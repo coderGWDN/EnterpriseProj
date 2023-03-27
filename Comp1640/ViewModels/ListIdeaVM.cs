@@ -12,7 +12,8 @@ namespace Comp1640.ViewModels
 
         public React React { get; set; }
 
-        public List<React> ListReact { get; set; }
+        public List<React> ListReactLike { get; set; }
+        public List<React> ListReactDislike { get; set; }
 
         public View View { get; set; }
 
