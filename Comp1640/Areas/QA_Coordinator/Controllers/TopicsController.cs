@@ -123,10 +123,15 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            var topic = await _db.Topics.FindAsync(id);
-            _db.Topics.Remove(topic);
-            await _db.SaveChangesAsync();
+            var check = await _db.Ideas.Where(i => i.TopicID == id).FirstOrDefaultAsync();
+            if (check == null)
+            {
+                var topic = await _db.Topics.FindAsync(id);
+                _db.Topics.Remove(topic);
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(List));
+            }
             return RedirectToAction(nameof(List));
-        }
+            }
     }
 }

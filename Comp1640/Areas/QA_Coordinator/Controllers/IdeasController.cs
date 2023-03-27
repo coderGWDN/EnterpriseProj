@@ -38,18 +38,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             _emailSender = emailSender;
             
         }
-        // GET: IdealsController
-        public async Task<IActionResult> List()
-        {
-            var ideas = _db.Ideas
-                .Include(i => i.Category)
-                .Include(i => i.Topic)
-                .Include(i => i.User)
-                .AsNoTracking();
 
-            return View(await ideas.ToListAsync());
-        }
-        public async Task<IActionResult> PageSubmit(string sortOrder)
+        public async Task<IActionResult> PageSubmit(string sortOrder, int id)
         {
             ViewData["ViewSortParm"] = sortOrder == "View" ? "" : "View";
             ViewData["LikeSortParm"] = sortOrder == "Like" ? "" : "Like";
@@ -99,8 +89,13 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     ideaLists = ideaLists.OrderByDescending(i => i.Idea.CreatedDate).ToList();
                     break;
             }
-
-            return View(ideaLists);
+            int numberOfRecords = ideaLists.Count();     //Count SQL
+            int numberOfPages = (int)Math.Ceiling((double)numberOfRecords / 5);
+            ViewBag.numberOfPages = numberOfPages;
+            ViewBag.currentPage = id;
+            List<ListIdeaVM> list = ideaLists.Skip(id * 5)  //Offset SQL
+                .Take(5).ToList();
+            return View(list);
         }
         // GET: IdealsController/Create
         public IActionResult Create()
@@ -276,7 +271,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 await _db.SaveChangesAsync();
 
 
-                return RedirectToAction(nameof(List));
+                return RedirectToAction(nameof(PageSubmit));
             }
             PopulateCategoriesDropDownList(idea.CategoryID);
             PopulateTopicsDropDownList(idea.TopicID);
@@ -297,13 +292,13 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             var idea = await _db.Ideas.FindAsync(id);
             if (idea == null)
             {
-                return RedirectToAction(nameof(List));
+                return RedirectToAction(nameof(PageSubmit));
             }
             try
             {
                 _db.Ideas.Remove(idea);
                 await _db.SaveChangesAsync();
-                return RedirectToAction(nameof(List));
+                return RedirectToAction(nameof(PageSubmit));
             }
             catch (DbUpdateException ex)
             {
@@ -322,6 +317,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         private void PopulateTopicsDropDownList(object selectedTopic = null)
         {
             var topicsQuery = from t in _db.Topics
+                              where DateTime.Compare(t.ClosureDate, DateTime.Now) > 0
                               orderby t.Name
                               select t;
             ViewBag.TopicID = new SelectList(topicsQuery.AsNoTracking(), "Id", "Name", selectedTopic);

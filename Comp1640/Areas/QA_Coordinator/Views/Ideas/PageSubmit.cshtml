@@ -171,7 +171,7 @@
                                 &nbsp;
                                 <p class="m-0">Comment</p>
                             </div>
-                            @if (Model[i].Idea.FilePath != null)
+                            @if (Model[i].Idea.FilePath != null && !User.IsInRole(SD.Role_STAFF))
                             {
                                 <div class="dropdown-item rounded d-flex justify-content-center align-items-center pointer text-muted p-1">
                                     <i class="fa-solid fa-download" style="color:blue"></i>
@@ -191,7 +191,14 @@
                             <hr />
                             <div class="accordion-body">
                                 @await Html.PartialAsync("_ChildComment", Model[i].ListComment)
-                                @await Html.PartialAsync("_ChildCreateComment", Model[i].Comment)
+                                @if (DateTime.Compare(Model[i].Idea.Topic.FinalClosureDate, DateTime.Now) >= 0)
+								{
+									@await Html.PartialAsync("_ChildCreateComment", Model[i].Comment)
+								}
+                                @if (DateTime.Compare(Model[i].Idea.Topic.FinalClosureDate, DateTime.Now) < 0)
+                                {   
+                                    <h4 style="color:red">Final closure date closed commnet</h4>
+                                }
                             </div>
                         </div>
                     </div>
@@ -208,6 +215,19 @@
         </div>
     </div>
 }
+<div style="display:flex;text-align:center;justify-content:center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            @for (var i = 0; i < @ViewBag.numberOfPages; i++)
+            {
+                var style = (ViewBag.currentPage == @i) ? "active" : "";
+                <li class="page-item @style">
+                    <a class="page-link" asp-route-id="@i" asp-route-searchString="@ViewData["CurrentFilter"]">@(i + 1)</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
         crossorigin="anonymous"></script>

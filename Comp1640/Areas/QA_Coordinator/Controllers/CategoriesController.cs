@@ -30,7 +30,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             if (data == null)
             {
                 ViewBag.message = "Error: Category is null";
-                return RedirectToAction(nameof(List));
+                return View();
             }
             return View(data);
         }
@@ -103,10 +103,16 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            var category = await _db.Categories.FindAsync(id);
-            _db.Categories.Remove(category);
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(List));
+            var check = await _db.Ideas.Where(i => i.CategoryID == id).FirstOrDefaultAsync();
+            if(check == null)
+            {
+                var category = await _db.Categories.FindAsync(id);
+                _db.Categories.Remove(category);
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(List));
+            }
+           
+                return RedirectToAction(nameof(List));
 
         }
     }
