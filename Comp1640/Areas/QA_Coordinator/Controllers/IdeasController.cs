@@ -17,6 +17,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Formats.Asn1.AsnWriter;
@@ -82,14 +84,19 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     {
                         IdealID = idea.Id
                     },
-                    ListComment = await _db.Comments.Where(c=>c.IdealID==idea.Id).ToListAsync(),
+                    ListComment = await _db.Comments.Where(c => c.IdealID == idea.Id).ToListAsync(),
+<<<<<<<<< Temporary merge branch 1
                     View = new View()
                     {
                         IdealID = idea.Id
                     },
                     ListView = await _db.Views.Where(c => c.IdealID == idea.Id).ToListAsync(),
                     React = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.UserID == GetUserId()).FirstOrDefaultAsync(),
-                    ListReact = await _db.Reacts.Where(r => r.IdealID == idea.Id && r.Like == true).ToListAsync(),  
+                    ListReact = await _db.Reacts.Where(r => r.IdealID== idea.Id && r.Like==true).ToListAsync(),
+=========
+
+>>>>>>>>> Temporary merge branch 2
+
                 };
                 PopulateCategoriesDropDownList(idea.CategoryID);
                 PopulateTopicsDropDownList(idea.TopicID);
@@ -284,8 +291,29 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             };
             _db.Add(comment);
             await _db.SaveChangesAsync();
+            SendNotificationtoAuthorIdea(commentView.IdealID);
             return RedirectToAction(nameof(PageSubmit));
         }
+
+        [NonAction]
+        private async Task SendNotificationtoAuthorIdea(int ideaId)
+        {
+            var findAuthorIdeabyIdeaId = _db.Ideas.FirstOrDefault(u => u.Id == ideaId);
+
+            var authorIdea = _db.ApplicationUsers.FirstOrDefault(u => u.Id == findAuthorIdeabyIdeaId.UserID);
+
+            if (authorIdea == null)
+                return;
+
+            MailContent content = new MailContent
+            {
+                To = authorIdea.Email,
+                Subject = "New Idea",
+                Body = "Have a new idea"
+            };
+            await _emailSender.SendMail(content);
+        }
+
 
         [HttpGet("QA_Coordinator/Ideas/viewIdea/{id}")]
         public async Task<ActionResult> ViewIdea([FromRoute] int id)
