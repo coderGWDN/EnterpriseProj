@@ -28,6 +28,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             
             StatisticalCategoryWithIdeas();
             StatisticalTopicWithIdeas();
+            StatisticalDepartmentWithIdeas();
             return View();
         }
 
@@ -187,5 +188,90 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             ViewBag.ChartOptionsStatisticalTopicWithIdeas = options;
         }
 
+        public void StatisticalDepartmentWithIdeas()
+        {
+            List<int> ideasList = new List<int>();
+            var departmentList = _db.Departments.ToList();
+            var departmentNameList = departmentList.Select(x => x.Name).ToArray();
+            var ideaList = _db.Ideas.ToList();
+            var userList = _db.ApplicationUsers.ToList();
+            int ideaOfDepartment = 0;
+
+            foreach (var department in departmentList)
+            {
+
+                int ideaOfUser = 0;
+                foreach (var user in userList)
+                {
+                    ideaOfUser = ideaList.Where(i => i.UserID == user.Id).ToList().Count;
+                    ideaOfDepartment += ideaOfUser;
+                }
+                ideasList.Add(ideaOfDepartment);
+            }
+            int[] ideas = ideasList.ToArray();
+            var data = new
+            {
+                labels = departmentNameList,
+                datasets = new[]
+                {
+                    new {
+                    label = "Ideas",
+                    data = ideas,
+                    backgroundColor = new[]
+                    {
+                        "#4dc9f6",
+                        "#f67019",
+                        "#f53794",
+                        "#537bc4",
+                        "#acc236",
+                        "#166a8f",
+                        "#00a950",
+                        "#58595b",
+                        "#8549ba"
+
+                    },
+                    borderColor = "rgb(75,192,192,1)",
+                    borderWidth = 0,
+                    hoverBackgroundColor = new[]
+                    {
+                        "#4dc9f6",
+                        "#f67019",
+                        "#f53794",
+                        "#537bc4",
+                        "#acc236",
+                        "#166a8f",
+                        "#00a950",
+                        "#58595b",
+                        "#8549ba"
+                    },
+                    }
+
+                }
+            };
+
+            // Define the options for the chart
+            var options = new
+            {
+                responsive = true,
+                plugins = new
+                {
+                    title = new { display = true, text = " Chart" },
+                    legend = new
+                    {
+                        position = "top",
+                        labels = new
+                        {
+                            boxWidth = 11,
+                            fondColor = "#757681",
+                            fontSize = 11
+                        }
+                    },
+                }
+
+            };
+
+            ViewBag.ChartDataStatisticalDepartmentWithIdeas = data;
+            ViewBag.ChartOptionsStatisticalDepartmentWithIdeas = options;
+        }
     }
 }
