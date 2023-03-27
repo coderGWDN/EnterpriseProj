@@ -6,7 +6,7 @@
 
 
 <div>
-    <canvas id="myChart"></canvas>
+    <canvas id="statisticalCategoryWithIdeas"></canvas>
 </div>  
 
 <div>
@@ -28,6 +28,14 @@
         options: optionsStatisticalCategoryWithIdeas,
     });
 
+    var dataStatisticalDepartmentWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalDepartmentWithIdeas));
+    var optionsStatisticalDepartmentWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalDepartmentWithIdeas));
 
+    var ctxStatisticalDepartmentWithIdeas = document.getElementById("statisticalDepartmentWithIdeas");
+    var StatisticalCategoryWithIdeas = new Chart(ctxStatisticalDepartmentWithIdeas, {
+        type: 'pie',
+        data: dataStatisticalDepartmentWithIdeas,
+        options: optionsStatisticalDepartmentWithIdeas,
+    });
 </script>
 
