@@ -25,10 +25,13 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
         public IActionResult Index()
         {
+            
             StatisticalCategoryWithIdeas();
+            StatisticalTopicWithIdeas();
             return View();
         }
 
+        
 
         public void StatisticalCategoryWithIdeas()
         {
@@ -106,6 +109,83 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             ViewBag.ChartOptionsStatisticalCategoryWithIdeas = options;
         }
 
+
+        public void StatisticalTopicWithIdeas()
+        {
+            List<int> ideasList = new List<int>();
+            var topicList = _db.Topics.ToList();
+            var topicNameList = topicList.Select(x => x.Name).ToArray();
+            var ideaList = _db.Ideas.ToList();
+
+            foreach (var topic in topicList)
+            {
+                ideasList.Add(ideaList.Where(i => i.TopicID == topic.Id).ToList().Count);
+            }
+            int[] ideas = ideasList.ToArray();
+            var data = new
+            {
+                labels = topicNameList,
+                datasets = new[]
+                {
+                    new {
+                    label = "Ideas",
+                    data = ideas,
+                    backgroundColor = new[]
+                    {
+                        "#4dc9f6",
+                        "#f67019",
+                        "#f53794",
+                        "#537bc4",
+                        "#acc236",
+                        "#166a8f",
+                        "#00a950",
+                        "#58595b",
+                        "#8549ba"
+
+                    },
+                    borderColor = "rgb(75,192,192,1)",
+                    borderWidth = 0,
+                    hoverBackgroundColor = new[]
+                    {
+                        "#4dc9f6",
+                        "#f67019",
+                        "#f53794",
+                        "#537bc4",
+                        "#acc236",
+                        "#166a8f",
+                        "#00a950",
+                        "#58595b",
+                        "#8549ba"
+                    },
+                    }
+
+                }
+            };
+
+            // Define the options for the chart
+            var options = new
+            {
+                responsive = true,
+                plugins = new
+                {
+                    title = new { display = true, text = " Chart" },
+                    legend = new
+                    {
+                        position = "top",
+                        labels = new
+                        {
+                            boxWidth = 11,
+                            fondColor = "#757681",
+                            fontSize = 11
+                        }
+                    },
+                }
+
+            };
+
+            ViewBag.ChartDataStatisticalTopicWithIdeas = data;
+            ViewBag.ChartOptionsStatisticalTopicWithIdeas = options;
+        }
 
     }
 }
