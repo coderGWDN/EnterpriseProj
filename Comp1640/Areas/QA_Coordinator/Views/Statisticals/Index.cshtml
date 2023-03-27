@@ -28,6 +28,16 @@
         options: optionsStatisticalCategoryWithIdeas,
     });
 
+    var dataStatisticalTopicWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalTopicWithIdeas));
+    var optionsStatisticalTopicWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalTopicWithIdeas));
+
+    var ctxStatisticalTopicWithIdeas = document.getElementById("statisticalTopicWithIdeas");
+    var StatisticalTopicWithIdeas = new Chart(ctxStatisticalTopicWithIdeas, {
+        type: 'pie',
+        data: dataStatisticalTopicWithIdeas,
+        options: optionsStatisticalTopicWithIdeas,
+    });
+
     var dataStatisticalDepartmentWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalDepartmentWithIdeas));
     var optionsStatisticalDepartmentWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalDepartmentWithIdeas));
 
