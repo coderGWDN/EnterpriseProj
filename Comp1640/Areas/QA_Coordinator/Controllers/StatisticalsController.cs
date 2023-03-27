@@ -25,45 +25,10 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
         public IActionResult Index()
         {
-            MyChart();
             StatisticalCategoryWithIdeas();
             return View();
         }
 
-        public void MyChart()
-        {
-            // Define the data for the chart
-            var data = new
-            {
-                labels = new[] { "January", "February", "March", "April", "May", "June", "July" },
-                datasets = new[]
-                {
-                    new {
-                        label = "Sales",
-                        data = new[] { 65, 59, 80, 81, 56, 55, 40 },
-                        backgroundColor = "rgba(75,192,192,1)",
-                        borderColor = "rgba(75,192,192,1)",
-                        borderWidth = 1
-                        }
-                }
-            };
-
-            // Define the options for the chart
-            var options = new
-            {
-                responsive = true,
-                title = new { display = true, text = "Sales Chart" },
-                scales = new
-                {
-                    yAxes = new[] { new { ticks = new { beginAtZero = true } } }
-                }
-            };
-
-            // Pass the data and options to the view
-            ViewBag.ChartData = data;
-            ViewBag.ChartOptions = options;
-
-        }
 
         public void StatisticalCategoryWithIdeas()
         {
