@@ -29,13 +29,13 @@ namespace Comp1640
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
+
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddScoped<IDbInitializer, DbInitializer>();
-            
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = $"/Identity/Account/Login";
@@ -53,6 +53,11 @@ namespace Comp1640
             var mailsettings = Configuration.GetSection("MailSettings");  // đọc config
             services.Configure<MailSettings>(mailsettings);                // đăng ký để Inject
             services.AddTransient<ISendMailService, SendMailService>();
+
+            services.AddControllersWithViews()
+            .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 
             services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
         }

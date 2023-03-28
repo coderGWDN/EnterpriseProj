@@ -1,0 +1,51 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+<div>
+    <canvas id="statisticalCategoryWithIdeas"></canvas>
+</div>  
+
+<div>
+    <canvas id="statisticalTopicWithIdeas"></canvas>
+</div>
+<div>
+    <canvas id="statisticalDepartmentWithIdeas"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var dataStatisticalCategoryWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalCategoryWithIdeas));
+    var optionsStatisticalCategoryWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalCategoryWithIdeas));
+
+    var ctxStatisticalCategoryWithIdeas = document.getElementById("statisticalCategoryWithIdeas");
+    var StatisticalCategoryWithIdeas = new Chart(ctxStatisticalCategoryWithIdeas, {
+        type: 'pie',
+        data: dataStatisticalCategoryWithIdeas,
+        options: optionsStatisticalCategoryWithIdeas,
+    });
+
+    var dataStatisticalTopicWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalTopicWithIdeas));
+    var optionsStatisticalTopicWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalTopicWithIdeas));
+
+    var ctxStatisticalTopicWithIdeas = document.getElementById("statisticalTopicWithIdeas");
+    var StatisticalTopicWithIdeas = new Chart(ctxStatisticalTopicWithIdeas, {
+        type: 'pie',
+        data: dataStatisticalTopicWithIdeas,
+        options: optionsStatisticalTopicWithIdeas,
+    });
+
+    var dataStatisticalDepartmentWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalDepartmentWithIdeas));
+    var optionsStatisticalDepartmentWithIdeas = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalDepartmentWithIdeas));
+
+    var ctxStatisticalDepartmentWithIdeas = document.getElementById("statisticalDepartmentWithIdeas");
+    var StatisticalCategoryWithIdeas = new Chart(ctxStatisticalDepartmentWithIdeas, {
+        type: 'pie',
+        data: dataStatisticalDepartmentWithIdeas,
+        options: optionsStatisticalDepartmentWithIdeas,
+    });
+</script>
+

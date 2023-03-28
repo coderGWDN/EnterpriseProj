@@ -275,8 +275,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
                 return RedirectToAction(nameof(PageSubmit));
             }
-            PopulateCategoriesDropDownList(idea.CategoryID);
-            PopulateTopicsDropDownList(idea.TopicID);
+            PopulateCategoriesDropDownList();
+            PopulateTopicsDropDownList();
             return View(idea);
         }
 
