@@ -91,7 +91,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             {
                 responsive = true,
                 plugins = new {
-                    title = new { display = true, text = " Chart" },
+                    title = new { display = true, text = " Category" },
                     legend = new
                     {
                         position = "top",
@@ -169,7 +169,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 responsive = true,
                 plugins = new
                 {
-                    title = new { display = true, text = " Chart" },
+                    title = new { display = true, text = " Topic" },
                     legend = new
                     {
                         position = "top",
@@ -255,7 +255,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 responsive = true,
                 plugins = new
                 {
-                    title = new { display = true, text = " Chart" },
+                    title = new { display = true, text = " Deparment" },
                     legend = new
                     {
                         position = "top",
