@@ -518,6 +518,10 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 foreach (var idea in ideas)
                 {
                     var filePath = Path.Combine(fileFolderPath, idea.FilePath.Replace("/file/", ""));
+                    if (!System.IO.File.Exists(filePath))
+                    {
+                        return NotFound();
+                    }
                     zipArchive.CreateEntryFromFile(filePath, Path.GetFileName(filePath));
                 }
             }
