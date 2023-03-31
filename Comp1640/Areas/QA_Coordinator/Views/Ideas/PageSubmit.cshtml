@@ -31,11 +31,11 @@
         <input class="btn btn-success" type="submit" id="btnSubmit" value="Export" />
 
     </form>
-    }
-    <form method="post" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="DownloadFileZip">
-        <input class="btn btn-success" type="submit" id="btnSubmit" value="Dowload" />
+        <form method="post" asp-area="QA_Coordinator" asp-controller="Ideas" asp-action="DownloadFileZip">
+            <input class="btn btn-success" type="submit" id="btnSubmit" value="Dowload" />
 
-    </form>
+        </form>
+    }
     <!-- create modal -->
     @await Html.PartialAsync("_CreateIdea", new Idea())
     <a asp-action="PageSubmit" asp-route-sortOrder="@ViewData["ViewSortParm"]">Sort by View</a>
