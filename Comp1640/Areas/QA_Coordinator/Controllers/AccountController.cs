@@ -1,29 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Comp1640.Data;
+﻿using Comp1640.Data;
+using Comp1640.Utility;
+using Comp1640.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Comp1640.Utility;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Comp1640.ViewModels;
+using System.Collections.Generic;
+using System;
+using System.Data;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using static Humanizer.On;
+using Comp1640.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
-namespace Comp1640.Areas.Admin.Controllers
+namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
-    [Area(SD.Area_Admin)]
-    [Authorize(Roles = SD.Role_ADMIN)]
-    public class UsersController : Controller
+    [Area(SD.Area_QA_COORDINATOR)]
+    [Authorize(Roles = SD.Role_QA_COORDINATOR)]
+    public class AccountController : BaseController
     {
+
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
 
-        public UsersController(
-            UserManager<IdentityUser> userManager, 
+        public AccountController(
+            UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
             ApplicationDbContext db
             )
@@ -37,7 +44,8 @@ namespace Comp1640.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var claimIdentity = (ClaimsIdentity) User.Identity;
+            var userC = _db.ApplicationUsers.Find(GetUserId());
+            var claimIdentity = (ClaimsIdentity)User.Identity;
             var claims = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             var userList = _db.ApplicationUsers
@@ -45,15 +53,19 @@ namespace Comp1640.Areas.Admin.Controllers
                 .OrderBy(a => a.CreateAt)
                 .Include(u => u.Department)
                 .ToList();
-
+            List<ApplicationUser> users = new List<ApplicationUser>();
             foreach (var user in userList)
             {
                 var userTemp = await _userManager.FindByIdAsync(user.Id);
                 var roleTemp = await _userManager.GetRolesAsync(userTemp);
                 user.Role = roleTemp.First();
+                if(user.Role == SD.Role_STAFF && user.DepartmentId == userC.DepartmentId)
+                {
+                    users.Add(user);
+                }
             }
 
-            return View(userList);
+            return View(users);
         }
 
         //================================= DELETE =================================
@@ -135,7 +147,7 @@ namespace Comp1640.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> LockUnLock(string id)
         {
-            var claimIdentity = (ClaimsIdentity) User.Identity;
+            var claimIdentity = (ClaimsIdentity)User.Identity;
             var claims = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             var user = _db.ApplicationUsers.Find(id);
@@ -169,20 +181,20 @@ namespace Comp1640.Areas.Admin.Controllers
         public async Task<IActionResult> ConfirmEmail(string id)
         {
             var userInDb = _db.ApplicationUsers.Find(id);
-        
+
             if (userInDb == null)
             {
                 return NotFound();
             }
-        
+
             ConfirmEmailVM confirmEmailVm = new ConfirmEmailVM()
             {
                 Email = userInDb.Email
             };
-        
+
             return View(confirmEmailVm);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> ConfirmEmail(ConfirmEmailVM confirmEmailVm)
         {
@@ -193,10 +205,10 @@ namespace Comp1640.Areas.Admin.Controllers
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(userInDb);
                     return RedirectToAction("ResetPassword", "Users",
-                        new {token = token, email = userInDb.Email});
+                        new { token = token, email = userInDb.Email });
                 }
             }
-        
+
             return View(confirmEmailVm);
         }
 

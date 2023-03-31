@@ -21,6 +21,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
+using Microsoft.AspNetCore.Hosting;
+using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Crypto;
 
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
@@ -32,13 +35,14 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ISendMailService _emailSender;
+        private readonly IHostingEnvironment _hosting;
 
-        public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager, ISendMailService emailSender)
+        public IdeasController(ApplicationDbContext db, UserManager<IdentityUser> userManager, ISendMailService emailSender, IHostingEnvironment hosting)
         {
             _db = db;
             _userManager = userManager;
             _emailSender = emailSender;
-            
+            _hosting = hosting;
         }
 
         public async Task<IActionResult> PageSubmit(string sortOrder, int id)
@@ -462,6 +466,69 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             }
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> DownloadFileZip()
+        //{
+        //    // Create a memory stream to write the zip file to
+        //    var memoryStream = new MemoryStream();
+
+        //    var ideas = _db.Ideas.Where(i => i.FilePath != null).ToList();
+
+        //    var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
+        //    var fileFolderPath = Path.Combine(wwwRootPath, "file");
+        //    foreach(var idea in ideas)
+        //    {
+        //        var filePath = Path.Combine(fileFolderPath, idea.FilePath.Replace("/file/", ""));
+
+        //        // Create a new zip archive in the memory stream
+        //        using (var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+        //        {
+        //            // Create a new zip entry for the file
+        //            var zipEntry = zipArchive.CreateEntry(Path.GetFileName(filePath));
+
+        //            // Open the file and copy its contents to the zip entry stream
+        //            using (var zipEntryStream = zipEntry.Open())
+        //            {
+        //                using (var fileStream = new FileStream(filePath, FileMode.Open))
+        //                {
+        //                    fileStream.CopyTo(zipEntryStream);
+        //                }
+        //            }
+
+        //        }
+        //    }
+        //    // Set the position of the memory stream to the beginning
+        //    memoryStream.Position = 0;
+        //    // Return the memory stream as a FileResult with the MIME type set to application/zip
+        //    return File(memoryStream, "application/zip", "AllFile.zip");
+        //}
+
+
+        [HttpPost]
+        public async Task<IActionResult> DownloadFileZip()
+        {
+            var ideas = _db.Ideas.Where(i => i.FilePath != null).ToList();
+            var tempFile = Path.GetTempFileName();
+            var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var fileFolderPath = Path.Combine(wwwRootPath, "file");
+            using (var zipFile = System.IO.File.Create(tempFile))
+            using (var zipArchive = new ZipArchive(zipFile, ZipArchiveMode.Create))
+            {
+                foreach (var idea in ideas)
+                {
+                    var filePath = Path.Combine(fileFolderPath, idea.FilePath.Replace("/file/", ""));
+                    if (!System.IO.File.Exists(filePath))
+                    {
+                        return NotFound();
+                    }
+                    zipArchive.CreateEntryFromFile(filePath, Path.GetFileName(filePath));
+                }
+            }
+
+            var stream = new FileStream(tempFile, FileMode.Open);
+            return File(stream, "application/zip", "my.zip");
+        }
 
         [HttpGet]
         public async Task<IActionResult> DownloadFile(int id)
@@ -525,7 +592,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                     _db.Comments.Where(c => c.IdealID == idea.Id).Count().ToString(),
                     _db.Reacts.Where(l => l.IdealID == idea.Id && l.Like == true).Count().ToString(),
                     _db.Reacts.Where(d => d.IdealID == idea.Id && d.Dislike == true).Count().ToString(),
-                    _db.Views.Where(c => c.IdealID == idea.Id).FirstOrDefault().Count.ToString()
+                    _db.Views.Where(c => c.IdealID == idea.Id).ToList().Count().ToString()
                 };
                 ideaLists.Add(ideaList);
             }

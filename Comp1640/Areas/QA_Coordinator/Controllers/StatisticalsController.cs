@@ -257,7 +257,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 responsive = true,
                 plugins = new
                 {
-                    title = new { display = true, text = " Department" },
+                    title = new { display = true, text = " Deparment" },
                     legend = new
                     {
                         position = "top",

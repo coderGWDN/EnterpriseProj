@@ -1,0 +1,25 @@
+﻿@model Comp1640.ViewModels.ConfirmEmailVM
+
+@{
+    ViewBag.Title = "Check Email";
+    Layout = "_Layout";
+}
+
+<h2>Check Email</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" readonly>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <button type="submit" class="btn btn-primary form-control">Submit</button>
+        </div>
+        <div class="col">
+            <a asp-action="Index" class="btn btn-danger form-control">Cancel</a>
+        </div>
+    </div>
+</form>

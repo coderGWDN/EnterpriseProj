@@ -7,7 +7,7 @@
 
 <h2>List User</h2>
 <div class="d-flex justify-content-between mb-4">
-    <a href="/Identity/Account/Register" class="btn btn-primary">Create new User</a>
+    <a href="/QA_Coordinator/Views/Account/Register" class="btn btn-primary">Create new User</a>
     
     <form class="form-inline my-2 my-lg-0 float-right">
         <input id="myInput" class="form-control mr-sm-2" type="text" placeholder="Search">
@@ -57,16 +57,16 @@
                         <td>
                             @if (user.LockoutEnd == null || user.LockoutEnd < DateTime.Now)
                             {
-                                <a asp-controller="Users" asp-action="LockUnLock" asp-route-id="@user.Id" class="btn btn-info">Lock</a>
+                                <a asp-controller="Account" asp-action="LockUnLock" asp-route-id="@user.Id" class="btn btn-info">Lock</a>
                             }
                             else
                             {
-                                <a asp-controller="Users" asp-action="LockUnLock" asp-route-id="@user.Id" class="btn btn-info">UnLock</a>
+                                <a asp-controller="Account" asp-action="LockUnLock" asp-route-id="@user.Id" class="btn btn-info">UnLock</a>
                             }
 
-                            <a asp-controller="Users" asp-action="Update" asp-route-id="@user.Id" class="btn btn-info">Edit</a>
-                            <a asp-controller="Users" asp-action="ConfirmEmail" asp-route-id="@user.Id" class="btn btn-success">Reset Password</a>
-                            <a asp-controller="Users" asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger" onclick="return confirm('Do you want delete this item?')">Delete</a>
+                            <a asp-controller="Account" asp-action="Update" asp-route-id="@user.Id" class="btn btn-info">Edit</a>
+                            <a asp-controller="Account" asp-action="ConfirmEmail" asp-route-id="@user.Id" class="btn btn-success">Reset Password</a>
+                            <a asp-controller="Account" asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger" onclick="return confirm('Do you want delete this item?')">Delete</a>
                         </td>
                     </tr>
                 }
