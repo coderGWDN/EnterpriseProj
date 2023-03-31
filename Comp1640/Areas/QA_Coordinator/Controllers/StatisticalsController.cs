@@ -29,6 +29,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             StatisticalCategoryWithIdeas();
             StatisticalTopicWithIdeas();
             StatisticalDepartmentWithIdeas();
+            StatisticalIdeasWithComments();
+            StatisticalDepartmentWithContributors();
             return View();
         }
 
@@ -273,5 +275,190 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             ViewBag.ChartDataStatisticalDepartmentWithIdeas = data;
             ViewBag.ChartOptionsStatisticalDepartmentWithIdeas = options;
         }
+
+        public void StatisticalDepartmentWithContributors()
+        {
+            List<int> contributorsList = new List<int>();
+            var departmentList = _db.Departments.ToList();
+            var departmentNameList = departmentList.Select(x => x.Name).ToArray();
+
+            var viewList = _db.Views.ToList();
+            var userList = _db.ApplicationUsers.ToList();
+            
+
+            foreach (var department in departmentList)
+            {
+
+                int viewOfUser = 0;
+                int viewOfDepartment = 0;
+                foreach (var user in userList)
+                {
+                    viewOfUser = viewList.Where(i => i.UserID == user.Id).ToList().Count;
+                    viewOfDepartment += viewOfUser;
+                }
+                contributorsList.Add(viewOfDepartment);
+            }
+            int[] contributors = contributorsList.ToArray();
+
+            var data = new
+            {
+                labels = departmentNameList,
+                datasets = new[]
+                {
+                    new {
+                    label = "Contributors",
+                    data = contributors,
+                    backgroundColor = new[]
+                    {
+                        "#4dc9f6",
+                        "#f67019",
+                        "#f53794",
+                        "#537bc4",
+                        "#acc236",
+                        "#166a8f",
+                        "#00a950",
+                        "#58595b",
+                        "#8549ba"
+
+                    },
+                    borderColor = "rgb(75,192,192,1)",
+                    borderWidth = 0,
+                    hoverBackgroundColor = new[]
+                    {
+                        "#4dc9f6",
+                        "#f67019",
+                        "#f53794",
+                        "#537bc4",
+                        "#acc236",
+                        "#166a8f",
+                        "#00a950",
+                        "#58595b",
+                        "#8549ba"
+                    },
+                    }
+
+                }
+            };
+
+            // Define the options for the chart
+            var options = new
+            {
+                responsive = true,
+                plugins = new
+                {
+                    title = new { display = true, text = " Department" },
+                    legend = new
+                    {
+                        position = "top",
+                        labels = new
+                        {
+                            boxWidth = 11,
+                            fondColor = "#757681",
+                            fontSize = 11
+                        }
+                    },
+                }
+
+            };
+
+            ViewBag.ChartDataStatisticalDepartmentWithContributors = data;
+            ViewBag.ChartOptionsStatisticalDepartmentWithContributors = options;
+        }
+
+        public void StatisticalIdeasWithComments()
+        {
+
+            List<int> commentsList = new List<int>();
+            var ideasList = _db.Ideas.ToList();
+            var ideaContentList = ideasList.Select(x => x.Content).ToArray();
+            var commentList = _db.Comments.ToList();
+            
+
+            foreach ( var idea in ideasList )
+            {
+                    commentsList.Add(commentList.Where(_ => _.IdealID == idea.Id).ToList().Count);
+            }
+
+            commentsList.ToArray();
+
+            var data = new
+            {
+                labels = ideaContentList,
+                datasets = new[]
+                {
+                    new {
+                    label = "Comments",
+                    data = commentsList,
+                    backgroundColor = new[]
+                    {
+                        "#4dc9f6",
+                        "#f67019",
+                        "#f53794",
+                        "#537bc4",
+                        "#acc236",
+                        "#166a8f",
+                        "#00a950",
+                        "#58595b",
+                        "#8549ba"
+
+                    },
+                    //borderColor = "rgb(75,192,192,1)",
+                    //borderWidth = 0,
+                    hoverBackgroundColor = new[]
+                    {
+                        "#4dc9f6",
+                        "#f67019",
+                        "#f53794",
+                        "#537bc4",
+                        "#acc236",
+                        "#166a8f",
+                        "#00a950",
+                        "#58595b",
+                        "#8549ba"
+                    },
+                    }
+
+                }
+            };
+
+            // Define the options for the chart
+            var options = new
+            {
+                indexAxis = 'y',
+                elements = new
+                {
+                    bar = new
+                    {
+                        borderWidth= 2,
+                    }
+                },
+                responsive = true,
+                plugins = new
+                {
+                    
+                    title = new { display = true, text = " Comments" },
+                    legend = new
+                    {
+                        position = "right",
+                        labels = new
+                        {
+                            boxwidth = 11,
+                            fondcolor = "#757681",
+                            fontsize = 11
+                        }
+                    },
+                },
+                scales = new
+                {
+                    yAxes = new[] { new { ticks = new { beginAtZero = true } } }
+                }
+
+            };
+
+            ViewBag.ChartDataStatisticalIdeasWithComments = data;
+            ViewBag.ChartOptionsStatisticalIdeasWithComments = options;
+        }
     }
+
+    
 }
