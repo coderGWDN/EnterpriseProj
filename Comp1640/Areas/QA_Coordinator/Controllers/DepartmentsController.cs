@@ -13,7 +13,7 @@ using System.Xml.Linq;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles =SD.Role_ADMIN + "," + SD.Role_QA_COORDINATOR)]
+    [Authorize(Roles =SD.Role_ADMIN + "," + SD.Role_QA_MANAGER)]
     public class DepartmentsController : Controller
     {
         private readonly ApplicationDbContext _db;
