@@ -283,7 +283,6 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             var departmentNameList = departmentList.Select(x => x.Name).ToArray();
 
             var viewList = _db.Views.ToList();
-            var userList = _db.ApplicationUsers.ToList();
             
 
             foreach (var department in departmentList)
@@ -291,9 +290,12 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
                 int viewOfUser = 0;
                 int viewOfDepartment = 0;
+                var userList = _db.ApplicationUsers.Where(_ => _.DepartmentId == department.Id).ToList();
                 foreach (var user in userList)
                 {
+                    
                     viewOfUser = viewList.Where(i => i.UserID == user.Id).ToList().Count;
+                    viewOfUser = 1;
                     viewOfDepartment += viewOfUser;
                 }
                 contributorsList.Add(viewOfDepartment);

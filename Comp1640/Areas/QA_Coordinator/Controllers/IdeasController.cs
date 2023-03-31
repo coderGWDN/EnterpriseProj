@@ -349,6 +349,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
                 _db.Add(comment);
                 await _db.SaveChangesAsync();
+                await SendNotificationtoAuthorIdea(comment.IdealID);
             }
 
             return RedirectToAction(nameof(PageSubmit));
@@ -367,8 +368,8 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             MailContent content = new MailContent
             {
                 To = authorIdea.Email,
-                Subject = "New Idea",
-                Body = "Have a new idea"
+                Subject = "New Comment",
+                Body = "Have a new Comment"
             };
             await _emailSender.SendMail(content);
         }
