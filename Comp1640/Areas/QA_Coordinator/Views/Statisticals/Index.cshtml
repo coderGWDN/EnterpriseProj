@@ -61,7 +61,7 @@
     var dataStatisticalIdeasWithComments = @Html.Raw(Json.Serialize(ViewBag.ChartDataStatisticalIdeasWithComments));
     var optionsStatisticalIdeasWithComments = @Html.Raw(Json.Serialize(ViewBag.ChartOptionsStatisticalIdeasWithComments));
 
-    var ctxStatisticalIdeasWithComments = document.getElementById("statisticalIdeasWithComments").getContext("2d");
+    var ctxStatisticalIdeasWithComments = document.getElementById("statisticalIdeasWithComments");
     var StatisticalIdeasWithComments = new Chart(ctxStatisticalIdeasWithComments, {
         type: 'bar',
         data: dataStatisticalIdeasWithComments,

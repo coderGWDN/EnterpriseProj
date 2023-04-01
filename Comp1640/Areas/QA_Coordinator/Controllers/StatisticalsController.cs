@@ -294,8 +294,15 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 foreach (var user in userList)
                 {
                     
-                    viewOfUser = viewList.Where(i => i.UserID == user.Id).ToList().Count;
-                    viewOfUser = 1;
+                    
+                    if(viewList.FindIndex(i => i.UserID == user.Id) == -1)
+                    {
+                        viewOfUser = 0;
+                    } else
+                    {
+                        viewOfUser = 1;
+                    }
+                   
                     viewOfDepartment += viewOfUser;
                 }
                 contributorsList.Add(viewOfDepartment);
@@ -378,7 +385,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
             foreach ( var idea in ideasList )
             {
-                    commentsList.Add(commentList.Where(_ => _.IdealID == idea.Id).ToList().Count);
+                   commentsList.Add(commentList.Where(_ => _.IdealID == idea.Id).ToList().Count);
             }
 
             commentsList.ToArray();
