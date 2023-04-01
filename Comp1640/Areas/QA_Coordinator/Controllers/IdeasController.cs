@@ -28,7 +28,7 @@ using Org.BouncyCastle.Crypto;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR + "," + SD.Role_STAFF)]
+    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_QA_COORDINATOR + "," + SD.Role_STAFF + "," + SD.Role_ADMIN)]
     public class IdeasController : BaseController
     {
         private readonly ApplicationDbContext _db;
@@ -191,7 +191,9 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
 
             _db.Ideas.Add(idea);
             await _db.SaveChangesAsync();
+
             await SendNotificationtoQA();
+
             return RedirectToAction(nameof(PageSubmit));
 
         }
