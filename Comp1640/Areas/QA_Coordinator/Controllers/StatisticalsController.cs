@@ -196,13 +196,13 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
             var departmentList = _db.Departments.ToList();
             var departmentNameList = departmentList.Select(x => x.Name).ToArray();
             var ideaList = _db.Ideas.ToList();
-            var userList = _db.ApplicationUsers.ToList();
-            int ideaOfDepartment = 0;
+            
 
             foreach (var department in departmentList)
             {
-
+                int ideaOfDepartment = 0;
                 int ideaOfUser = 0;
+                var userList = _db.ApplicationUsers.Where(_ => _.DepartmentId == department.Id).ToList();
                 foreach (var user in userList)
                 {
                     ideaOfUser = ideaList.Where(i => i.UserID == user.Id).ToList().Count;
@@ -210,7 +210,7 @@ namespace Comp1640.Areas.QA_Coordinator.Controllers
                 }
                 ideasList.Add(ideaOfDepartment);
             }
-            int[] ideas = ideasList.ToArray();
+            int[] ideas = ideasList.ToArray();;
             var data = new
             {
                 labels = departmentNameList,
