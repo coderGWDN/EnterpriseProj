@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Comp1640.Areas.QA_Coordinator.Controllers
 {
     [Area(SD.Area_QA_COORDINATOR)]
-    [Authorize(Roles = SD.Role_QA_MANAGER)]
+    [Authorize(Roles = SD.Role_QA_MANAGER + "," + SD.Role_ADMIN)]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _db;
